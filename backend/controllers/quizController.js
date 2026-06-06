@@ -90,10 +90,36 @@ const deleteQuiz = asyncHandler(async (req, res) => {
     }
 });
 
+// Trimite rezultatul unui quiz
+const submitQuiz = asyncHandler(async (req, res) => {
+    const { quizId, answers, score, durationSeconds } = req.body;
+    const QuizResult = require("../models/quizResultModel");
+
+    if (!quizId || score === undefined) {
+        return res.status(400).json({ message: "Quiz ID și scorul sunt necesare!" });
+    }
+
+    try {
+        const result = await QuizResult.create({
+            user: req.user._id,
+            quiz: quizId,
+            score,
+            answers,
+            durationSeconds
+        });
+
+        res.status(201).json(result);
+    } catch (error) {
+        res.status(400);
+        throw new Error(error.message);
+    }
+});
+
 module.exports = {
     createQuiz,
     fetchQuizzes,
     getQuizById,
     updateQuiz,
     deleteQuiz,
+    submitQuiz,
 };

@@ -5,7 +5,8 @@ const {
     fetchQuizzes, 
     getQuizById, 
     updateQuiz, 
-    deleteQuiz 
+    deleteQuiz,
+    submitQuiz
 } = require("../controllers/quizController");
 
 const router = express.Router();
@@ -13,6 +14,8 @@ const router = express.Router();
 router.route("/").post(protect, createQuiz);
 
 router.route("/").get(protect, fetchQuizzes);
+
+router.route("/submit").post(protect, submitQuiz);
 
 router.route("/:id").get(protect, getQuizById);
 

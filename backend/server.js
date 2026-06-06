@@ -8,6 +8,7 @@ const messageRoutes = require('./routes/messageRoutes');
 const {notFound, errorHandler } = require('./middleware/errorMiddleware')
 const quizRoutes = require('./routes/quizRoutes');
 const examRoutes = require('./routes/examRoutes');
+const recommendationRoutes = require('./routes/recommendationRoutes');
 const path = require('path');
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use('/api/chat', chatRoutes)
 app.use('/api/message', messageRoutes)
 app.use('/api/quiz', quizRoutes)
 app.use('/api/exams', examRoutes)
+app.use('/api/recommendations', recommendationRoutes)
 
 // Explicitly log the static file path for debugging
 const uploadsPath = path.join(__dirname, 'uploads');
