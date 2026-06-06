@@ -1,4 +1,5 @@
 import React from 'react';
+import RecommendedForYou from '../components/recommendations/RecommendedForYou';
 import {
   Box,
   VStack,
@@ -374,10 +375,12 @@ const Home = () => {
                 >
                   Rezolvă Quiz-uri!
                 </Button>
-
-                
               )}
             </Flex>
+
+            {user && user.occupation === 'student' && (
+              <RecommendedForYou user={user} />
+            )}
           </Box>
         </Box>
       </Container>

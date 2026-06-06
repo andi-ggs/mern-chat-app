@@ -1,24 +1,39 @@
-import React, { useState } from 'react'
-import { Button, Fieldset, Input, Stack, Flex } from '@chakra-ui/react'
-import { Field } from "../../components/ui/field"
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import React, { useState } from 'react';
+import {
+  Button,
+  Input,
+  Stack,
+  Text,
+  Icon,
+  Spinner,
+} from '@chakra-ui/react';
+import { Field } from "../../components/ui/field";
+import { PasswordInput } from "../../components/ui/password-input";
+import { InputGroup } from "../../components/ui/input-group";
+import { Alert } from "../../components/ui/alert";
+import { FaEnvelope } from 'react-icons/fa';
 import { useHistory } from "react-router-dom";
-import axios from 'axios'
+import axios from 'axios';
 
-const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
+const Login = ({ onSwitchToSignUp }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+  const [touched, setTouched] = useState({ email: false, password: false });
 
   const history = useHistory();
 
+  const emailError = touched.email && !email ? 'Adresa de email este obligatorie' : '';
+  const passwordError = touched.password && !password ? 'Parola este obligatorie' : '';
+
   const submitHandler = async () => {
+    setTouched({ email: true, password: true });
     setLoading(true);
+
     if (!email || !password) {
-      setMessage("Please Fill all the Fields!");
+      setMessage("Te rugăm să completezi toate câmpurile!");
       setMessageType("error");
       setTimeout(() => setMessage(""), 5000);
       setLoading(false);
@@ -38,7 +53,7 @@ const Login = () => {
         config
       );
 
-      setMessage("Registration Successful!");
+      setMessage("Autentificare reușită!");
       setMessageType("success");
       setTimeout(() => setMessage(""), 5000);
       localStorage.setItem("userInfo", JSON.stringify(data));
@@ -46,115 +61,108 @@ const Login = () => {
       history.push("/home");
     } catch (error) {
       console.log("Eroare la trimiterea cererii:", error.response?.data || error.message);
-      setMessage("Error Occurred!");
+      setMessage("Email sau parolă incorectă. Încearcă din nou.");
       setMessageType("error");
       setLoading(false);
       setTimeout(() => setMessage(""), 5000);
-      setLoading(false);
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') submitHandler();
+  };
+
   return (
-    <Flex justifyContent="center" p="4">
-      <div> {/* Încapsulăm Fieldset într-un div */}
-        <Fieldset.Root size="lg" maxW="md">
-          <Stack alignItems="center" p="4">
-            <div> {/* Evităm plasarea Fieldset.HelperText într-un <p> */}
-              <Fieldset.HelperText>
-                Introduceți datele pentru autentificare.
-              </Fieldset.HelperText>
-            </div>
-          </Stack>
+    <Stack spacing={5} w="100%">
+      {message && (
+        <Alert
+          status={messageType === "success" ? "success" : "error"}
+          title={message}
+          borderRadius="lg"
+        />
+      )}
 
-          <Fieldset.Content>
-            <Field label="Adresa de email" color="black">
-              <Input
-                name="email"
-                type="email"
-                placeholder="Introduceți adresa de email"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </Field>
+      <Field
+        label="Adresa de email"
+        errorText={emailError}
+        invalid={!!emailError}
+      >
+        <InputGroup startElement={<Icon as={FaEnvelope} color="gray.400" boxSize={4} />}>
+          <Input
+            name="email"
+            type="email"
+            placeholder="exemplu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+            onKeyDown={handleKeyDown}
+            size="lg"
+            borderRadius="lg"
+            borderColor="gray.200"
+            _hover={{ borderColor: 'purple.300' }}
+            _focus={{ borderColor: 'purple.500', boxShadow: '0 0 0 1px var(--chakra-colors-purple-500)' }}
+          />
+        </InputGroup>
+      </Field>
 
-            <Field label="Parola" color="black">
-              <Flex direction="row" align="center" width="100%" position="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Parolă"
-                  name="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  width="100%"
-                  style={{color: "black"}}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    right: "10px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <FaEyeSlash size={20} color="black"/> : <FaEye size={20} color="black"/>}
-                </div>
-              </Flex>
-            </Field>
-          </Fieldset.Content>
+      <Field
+        label="Parola"
+        errorText={passwordError}
+        invalid={!!passwordError}
+      >
+        <PasswordInput
+          placeholder="Introdu parola"
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+          onKeyDown={handleKeyDown}
+          size="lg"
+          borderRadius="lg"
+          borderColor="gray.200"
+          _hover={{ borderColor: 'purple.300' }}
+          _focus={{ borderColor: 'purple.500', boxShadow: '0 0 0 1px var(--chakra-colors-purple-500)' }}
+        />
+      </Field>
 
-          <Button
-            type="submit"
-            alignSelf="center"
-            bg="lightblue"
-            color="white"
-            _hover={{ bg: "lightblue.100" }}
-            _active={{ bg: "white", color: "lightblue", border: "2px solid lightblue" }}
-            _focus={{ boxShadow: "none" }}
-            mt="4"
-            width="100%"
-            onClick={submitHandler}
+      <Button
+        size="lg"
+        w="100%"
+        mt={2}
+        borderRadius="xl"
+        bgGradient="linear(to-r, #667eea, #764ba2)"
+        color="white"
+        fontWeight="semibold"
+        _hover={{
+          bgGradient: "linear(to-r, #5a6fd6, #6a4190)",
+          transform: 'translateY(-1px)',
+          boxShadow: 'lg',
+        }}
+        _active={{ transform: 'translateY(0)' }}
+        transition="all 0.2s"
+        onClick={submitHandler}
+        disabled={loading}
+      >
+        {loading ? <Spinner size="sm" color="white" /> : 'Autentificare'}
+      </Button>
+
+      {onSwitchToSignUp && (
+        <Text textAlign="center" fontSize="sm" color="gray.500" mt={2}>
+          Nu ai cont?{' '}
+          <Text
+            as="span"
+            color="purple.600"
+            fontWeight="semibold"
+            cursor="pointer"
+            _hover={{ textDecoration: 'underline' }}
+            onClick={onSwitchToSignUp}
           >
-            Login
-          </Button>
-
-          {/* <Button
-            variant="solid"
-            alignSelf="center"
-            bg="darkred"
-            color="white"
-            _hover={{ bg: "red.100" }}
-            _active={{ bg: "white", color: "red", border: "2px solid red" }}
-            _focus={{ boxShadow: "none" }}
-            mt="4"
-            width="100%"
-            onClick={() => {
-              setEmail("guest@example.com");
-              setPassword("123456");
-            }}
-          >
-            Autentifică-te drept vizitator
-          </Button> */}
-        </Fieldset.Root>
-        {message && (
-          <Flex
-            justifyContent="center"
-            alignItems="center"
-            bg={messageType === "success" ? "green.100" : "red.100"}
-            color={messageType === "success" ? "green.800" : "red.800"}
-            p="4"
-            mt="4"
-            borderRadius="md"
-            position="relative"
-            bottom="0"
-            width="100%"
-          >
-            {message}
-          </Flex>
-        )}
-      </div>
-    </Flex>
+            Înregistrează-te
+          </Text>
+        </Text>
+      )}
+    </Stack>
   );
 };
 
-export default Login
+export default Login;

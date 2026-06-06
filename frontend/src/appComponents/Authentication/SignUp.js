@@ -1,7 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import { Button, Fieldset, Input, Stack, Flex, createListCollection } from '@chakra-ui/react'
-import { Field } from "../../components/ui/field"
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import React, { useState } from 'react';
+import {
+  Button,
+  Input,
+  Stack,
+  Text,
+  Icon,
+  Spinner,
+  Flex,
+  createListCollection,
+} from '@chakra-ui/react';
+import { Field } from "../../components/ui/field";
+import { PasswordInput } from "../../components/ui/password-input";
+import { InputGroup } from "../../components/ui/input-group";
+import { Alert } from "../../components/ui/alert";
 import {
   SelectContent,
   SelectItem,
@@ -9,13 +20,19 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-} from "../../components/ui/select"
-import axios from 'axios'
+} from "../../components/ui/select";
+import { FaUser, FaEnvelope, FaImage } from 'react-icons/fa';
+import axios from 'axios';
 import { useHistory } from "react-router";
-import { Spinner } from "@chakra-ui/react";
 
-const SignUp = () => {
-  const [showPassword, setShowPassword] = useState(false);
+const occupation = createListCollection({
+  items: [
+    { label: "Profesor", value: "teacher" },
+    { label: "Elev", value: "student" },
+  ],
+});
+
+const SignUp = ({ onSwitchToLogin }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,18 +44,33 @@ const SignUp = () => {
   const history = useHistory();
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+    role: false,
+  });
+
+  const nameError = touched.name && !name ? 'Numele este obligatoriu' : '';
+  const emailError = touched.email && !email ? 'Emailul este obligatoriu' : '';
+  const passwordError = touched.password && !password ? 'Parola este obligatorie' : '';
+  const confirmError = touched.confirmPassword && confirmPassword !== password
+    ? 'Parolele nu coincid'
+    : touched.confirmPassword && !confirmPassword
+      ? 'Confirmarea parolei este obligatorie'
+      : '';
+  const roleError = touched.role && !role ? 'Selectează rolul tău' : '';
 
   const postDetails = (pics) => {
     setPicLoading(true);
     if (pics === undefined) {
-      setMessage("Te rog selecteaza o imagine");
+      setMessage("Te rog selectează o imagine");
       setMessageType("error");
       setPicLoading(false);
       setTimeout(() => setMessage(""), 5000);
       return;
     }
-
-    setPicLoading(true);
 
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
@@ -49,10 +81,9 @@ const SignUp = () => {
         headers: { "Content-Type": "multipart/form-data" }
       })
         .then((response) => {
-          console.log("Cloudinary response:", response);
           setPic(response.data.url.toString());
           setPicLoading(false);
-          setMessage("Imagine incărcată cu succes!");
+          setMessage("Imagine încărcată cu succes!");
           setMessageType("success");
           setTimeout(() => setMessage(""), 5000);
         })
@@ -64,7 +95,7 @@ const SignUp = () => {
           setPicLoading(false);
         });
     } else {
-      setMessage("Please Select a valid image format!");
+      setMessage("Selectează un format valid (JPEG sau PNG)!");
       setMessageType("error");
       setTimeout(() => setMessage(""), 5000);
       setPicLoading(false);
@@ -72,30 +103,26 @@ const SignUp = () => {
   };
 
   const submitHandler = async () => {
+    setTouched({ name: true, email: true, password: true, confirmPassword: true, role: true });
     setLoading(true);
-    if (!name || !email || !password || !confirmPassword || !occupation) {
-      setMessage("Please Fill all the Fields!");
+
+    if (!name || !email || !password || !confirmPassword || !role) {
+      setMessage("Te rugăm să completezi toate câmpurile!");
       setMessageType("error");
       setTimeout(() => setMessage(""), 5000);
       setLoading(false);
       return;
     }
     if (password !== confirmPassword) {
-      setMessage("Passwords do not match!");
+      setMessage("Parolele nu coincid!");
       setMessageType("error");
       setTimeout(() => setMessage(""), 5000);
       setLoading(false);
       return;
     }
-    //console.log(name, email, password, pic);
+
     const roleValue = Array.isArray(role) ? role[0] : role;
-    console.log("Payload trimis2:", {
-      name,
-      email,
-      password,
-      pic,
-      occupation: roleValue
-    });
+
     try {
       const config = {
         headers: {
@@ -115,8 +142,7 @@ const SignUp = () => {
         config
       );
 
-
-      setMessage("Registration Successful!");
+      setMessage("Înregistrare reușită!");
       setMessageType("success");
       setTimeout(() => setMessage(""), 5000);
 
@@ -125,174 +151,180 @@ const SignUp = () => {
       history.push("/home");
     } catch (error) {
       console.log("Eroare la trimiterea cererii:", error.response?.data || error.message);
-      setMessage("Error Occurred!");
+      setMessage("A apărut o eroare. Încearcă din nou.");
       setMessageType("error");
       setLoading(false);
       setTimeout(() => setMessage(""), 5000);
     } finally {
-      setLoading(false);  // 🔴 Dezactivează loading indiferent dacă request-ul are succes sau nu
+      setLoading(false);
     }
   };
 
+  const inputStyles = {
+    size: "lg",
+    borderRadius: "lg",
+    borderColor: "gray.200",
+    _hover: { borderColor: 'purple.300' },
+    _focus: { borderColor: 'purple.500', boxShadow: '0 0 0 1px var(--chakra-colors-purple-500)' },
+  };
+
   return (
-    <Flex justifyContent="center" p="4">
-      <div> {/* Încapsulăm Fieldset pentru a evita problemele de nesting */}
-        <Fieldset.Root size="lg" maxW="md">
-          <Stack alignItems="center" p="4">
-            <div> {/* Previne plasarea Fieldset.HelperText într-un <p> */}
-              <Fieldset.HelperText>
-                Vă rugăm să introduceți datele dumneavoastră.
-              </Fieldset.HelperText>
-            </div>
-          </Stack>
+    <Stack spacing={4} w="100%" maxH="60vh" overflowY="auto" pr={1}
+      sx={{
+        '&::-webkit-scrollbar': { width: '4px' },
+        '&::-webkit-scrollbar-thumb': { background: '#e2e8f0', borderRadius: '4px' },
+      }}
+    >
+      {message && (
+        <Alert
+          status={messageType === "success" ? "success" : "error"}
+          title={message}
+          borderRadius="lg"
+        />
+      )}
 
-          <Fieldset.Content>
-            <Field label="Nume" color="black">
-              <Input
-                name="name"
-                placeholder="Introduceți numele"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Field>
+      <Field label="Nume" errorText={nameError} invalid={!!nameError}>
+        <InputGroup startElement={<Icon as={FaUser} color="gray.400" boxSize={4} />}>
+          <Input
+            name="name"
+            placeholder="Introdu numele complet"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={() => setTouched((t) => ({ ...t, name: true }))}
+            {...inputStyles}
+          />
+        </InputGroup>
+      </Field>
 
-            <Field label="Adresa de email" color="black">
-              <Input
-                name="email"
-                type="email"
-                placeholder="Introduceți adresa de email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Field>
+      <Field label="Adresa de email" errorText={emailError} invalid={!!emailError}>
+        <InputGroup startElement={<Icon as={FaEnvelope} color="gray.400" boxSize={4} />}>
+          <Input
+            name="email"
+            type="email"
+            placeholder="exemplu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+            {...inputStyles}
+          />
+        </InputGroup>
+      </Field>
 
-            <Field label="Parola" color="black">
-              <Flex direction="row" align="center" width="100%" position="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Parolă"
-                  name="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  width="100%"
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    right: "10px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <FaEyeSlash size={20} color="black"/> : <FaEye size={20} color="black"/>}
-                </div>
-              </Flex>
-            </Field>
+      <Field label="Parola" errorText={passwordError} invalid={!!passwordError}>
+        <PasswordInput
+          placeholder="Alege o parolă"
+          name="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+          {...inputStyles}
+        />
+      </Field>
 
-            <Field label="Confirmare parolă" color="black">
-              <Flex direction="row" align="center" width="100%" position="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Confirmare parolă"
-                  name="confirmPassword"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  width="100%"
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    right: "10px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
-                </div>
-              </Flex>
-            </Field>
+      <Field label="Confirmare parolă" errorText={confirmError} invalid={!!confirmError}>
+        <PasswordInput
+          placeholder="Confirmă parola"
+          name="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          onBlur={() => setTouched((t) => ({ ...t, confirmPassword: true }))}
+          {...inputStyles}
+        />
+      </Field>
 
-            <Field label="Adăugați o fotografie de profil!" color="black">
-              <Flex direction="row" align="center" width="100%">
-                <Input
-                  type="file"
-                  p={1.5}
-                  accept="image/*"
-                  onChange={(e) => postDetails(e.target.files[0])}
-                />
-              </Flex>
-            </Field>
-          </Fieldset.Content>
-        </Fieldset.Root>
+      <Field label="Fotografie de profil">
+        <Flex
+          align="center"
+          gap={3}
+          p={3}
+          border="2px dashed"
+          borderColor="gray.200"
+          borderRadius="lg"
+          _hover={{ borderColor: 'purple.300', bg: 'purple.50' }}
+          transition="all 0.2s"
+          cursor="pointer"
+          position="relative"
+        >
+          <Icon as={FaImage} color="purple.400" boxSize={5} />
+          <Text fontSize="sm" color="gray.500" flex={1}>
+            {pic ? 'Imagine încărcată ✓' : 'Alege o imagine (JPEG/PNG)'}
+          </Text>
+          {picLoading && <Spinner size="sm" color="purple.500" />}
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) => postDetails(e.target.files[0])}
+            position="absolute"
+            inset={0}
+            opacity={0}
+            cursor="pointer"
+            height="100%"
+          />
+        </Flex>
+      </Field>
 
+      <Field errorText={roleError} invalid={!!roleError}>
         <SelectRoot
           collection={occupation}
-          size="sm"
+          size="lg"
           width="100%"
           onValueChange={(value) => {
-            console.log("Valoare selectată:", value.value);
             setRole(value.value);
-          }}  // Aici asigură-te că value este doar valoarea corectă, nu obiectul
+            setTouched((t) => ({ ...t, role: true }));
+          }}
         >
-          <SelectLabel color={'black'}>Eu sunt...</SelectLabel>
-          <SelectTrigger>
-            <SelectValueText placeholder="Profesor/Elev" />
+          <SelectLabel fontWeight="medium" mb={1}>Eu sunt...</SelectLabel>
+          <SelectTrigger borderRadius="lg" borderColor="gray.200" _hover={{ borderColor: 'purple.300' }}>
+            <SelectValueText placeholder="Profesor / Elev" />
           </SelectTrigger>
           <SelectContent>
             {occupation.items.map((roles) => (
-              <SelectItem item={roles} key={roles.value} value={roles.value}> {/* `value` trebuie să fie setat corect */}
+              <SelectItem item={roles} key={roles.value} value={roles.value}>
                 {roles.label}
               </SelectItem>
             ))}
           </SelectContent>
         </SelectRoot>
+      </Field>
 
-        <Button
-          type="submit"
-          alignSelf="center"
-          bg="lightblue"
-          color="white"
-          _hover={{ bg: "lightblue.100" }}
-          _active={{ bg: "white", color: "lightblue", border: "2px solid lightblue" }}
-          _focus={{ boxShadow: "none" }}
-          mt="4"
-          width="100%"
-          onClick={submitHandler}
-          disabled={picLoading || loading} // 🔥 Dezactivăm butonul în timpul încărcării
-        >
-          {picLoading || loading ? (
-            <Spinner size="sm" color="white" />
-          ) : (
-            "Sign Up"
-          )}
-        </Button>
+      <Button
+        size="lg"
+        w="100%"
+        mt={2}
+        borderRadius="xl"
+        bgGradient="linear(to-r, #667eea, #764ba2)"
+        color="white"
+        fontWeight="semibold"
+        _hover={{
+          bgGradient: "linear(to-r, #5a6fd6, #6a4190)",
+          transform: 'translateY(-1px)',
+          boxShadow: 'lg',
+        }}
+        _active={{ transform: 'translateY(0)' }}
+        transition="all 0.2s"
+        onClick={submitHandler}
+        disabled={picLoading || loading}
+      >
+        {picLoading || loading ? <Spinner size="sm" color="white" /> : 'Creează cont'}
+      </Button>
 
-        {message && (
-          <Flex
-            justifyContent="center"
-            alignItems="center"
-            bg={messageType === "success" ? "green.100" : "red.100"}
-            color={messageType === "success" ? "green.800" : "red.800"}
-            p="4"
-            mt="4"
-            borderRadius="md"
-            position="relative"
-            bottom="0"
-            width="100%"
+      {onSwitchToLogin && (
+        <Text textAlign="center" fontSize="sm" color="gray.500">
+          Ai deja cont?{' '}
+          <Text
+            as="span"
+            color="purple.600"
+            fontWeight="semibold"
+            cursor="pointer"
+            _hover={{ textDecoration: 'underline' }}
+            onClick={onSwitchToLogin}
           >
-            {message}
-          </Flex>
-        )}
-      </div>
-    </Flex>
+            Autentifică-te
+          </Text>
+        </Text>
+      )}
+    </Stack>
   );
 };
-
-const occupation = createListCollection({
-  items: [
-    { label: "Profesor", value: "teacher" },
-    { label: "Elev", value: "student" },
-  ],
-})
 
 export default SignUp;

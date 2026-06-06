@@ -17,7 +17,7 @@ import axios from 'axios';
 
 
 const QuizPage = () => {
-    const { user, quizzes, fetchQuizzes, selectQuiz, selectedQuiz } = QuizState();
+    const { user, quizzes, fetchQuizzes } = QuizState();
     const history = useHistory();
     const [showForm, setShowForm] = useState(false);
     const [quizTitle, setQuizTitle] = useState('');
@@ -192,6 +192,18 @@ const QuizPage = () => {
                         backdropFilter="blur(5px)"
                     >
                         Vezi Conversații
+                    </Button>
+                    <Button
+                        as="a"
+                        href="/solve-quizzes"
+                        size="md"
+                        bg="linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)"
+                        _hover={{ bg: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)" }}
+                        color="white"
+                        boxShadow="lg"
+                        borderRadius="full"
+                    >
+                        Rezolvă Quiz-uri
                     </Button>
                 </HStack>
                 <Box flex="0" display="flex" justifyContent="center">
@@ -598,14 +610,15 @@ const QuizPage = () => {
                                         {quiz.description}
                                     </Text>
                                     <Button 
-                                        colorScheme="blue" 
-                                        onClick={() => selectQuiz(quiz)}
-                                        bg="blue.400"
-                                        _hover={{ bg: "blue.500" }}
+                                        as="a"
+                                        href="/solve-quizzes"
+                                        bg="linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)"
+                                        _hover={{ bg: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)" }}
                                         color="white"
                                         boxShadow="md"
+                                        borderRadius="xl"
                                     >
-                                        Vezi Detalii
+                                        Rezolvă acum
                                     </Button>
                                 </VStack>
                             </Box>
