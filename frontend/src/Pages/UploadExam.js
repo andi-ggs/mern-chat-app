@@ -1,298 +1,300 @@
 import React, { useState } from 'react';
-import { Button, Fieldset, Input, Stack, Flex, Box, HStack, Text, VStack, Heading } from '@chakra-ui/react';
-import { Field } from "../components/ui/field";
+import {
+    Button,
+    Input,
+    Flex,
+    Box,
+    HStack,
+    Text,
+    VStack,
+    Heading,
+    Container,
+    Textarea,
+    Icon,
+    Card,
+} from '@chakra-ui/react';
 import axios from 'axios';
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
+import { FaCloudUploadAlt, FaFilePdf } from 'react-icons/fa';
 import GradientText from '../animations/gradientText';
 import {
-  MenuRoot,
-  MenuTrigger,
-  MenuContent,
-  MenuItem,
-  MenuSeparator,
-} from "../components/ui/menu";
+    MenuRoot,
+    MenuTrigger,
+    MenuContent,
+    MenuItem,
+    MenuSeparator,
+} from '../components/ui/menu';
 import { Avatar } from '@chakra-ui/react';
 import UserProfileModal from '../appComponents/mischellaneous/UserProfileModal';
 
 const UploadExam = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [pdf, setPdf] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const history = useHistory();
-  const user = JSON.parse(localStorage.getItem("userInfo"));
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [pdf, setPdf] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const history = useHistory();
+    const user = JSON.parse(localStorage.getItem('userInfo'));
 
-  const logoutHandler = () => {
-    localStorage.removeItem("userInfo");
-    history.push("/");
-};
+    const logoutHandler = () => {
+        localStorage.removeItem('userInfo');
+        history.push('/');
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
 
-    try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('description', description);
-      formData.append('pdf', pdf);
+        try {
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('pdf', pdf);
 
-      const userInfo = localStorage.getItem("userInfo") ? JSON.parse(localStorage.getItem("userInfo")) : null;
-      
-      if (!userInfo || !userInfo.token) {
-        setError("Nu sunteți autentificat sau sesiunea a expirat. Vă rugăm să vă autentificați din nou.");
-        setLoading(false);
-        return;
-      }
+            const userInfo = localStorage.getItem('userInfo')
+                ? JSON.parse(localStorage.getItem('userInfo'))
+                : null;
 
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      };
+            if (!userInfo || !userInfo.token) {
+                setError('Nu sunteți autentificat sau sesiunea a expirat. Vă rugăm să vă autentificați din nou.');
+                setLoading(false);
+                return;
+            }
 
-      console.log("Uploading PDF...");
-      const { data } = await axios.post('/api/exams', formData, config);
-      console.log("Upload successful:", data);
-      history.push('/home');
-    } catch (error) {
-      console.error("Upload error:", error.response?.data || error.message);
-      setError(error.response?.data?.message || 'Failed to upload exam');
-    } finally {
-      setLoading(false);
-    }
-  };
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${userInfo.token}`,
+                },
+            };
 
-  return (
-    <Flex justifyContent="center" p="4" w="100%">
-      {/* Header */}
-      <Box
+            await axios.post('/api/exams', formData, config);
+            history.push('/home');
+        } catch (err) {
+            setError(err.response?.data?.message || 'Nu s-a putut încărca examenul. Încercați din nou.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const inputStyles = {
+        bg: 'white',
+        borderColor: 'gray.200',
+        color: 'gray.800',
+        fontSize: 'md',
+        _hover: { borderColor: 'indigo.300' },
+        _focus: { borderColor: 'indigo.500', boxShadow: '0 0 0 1px var(--chakra-colors-indigo-500)' },
+        _placeholder: { color: 'gray.400' },
+    };
+
+    return (
+        <Box minH="100vh" bg="linear-gradient(160deg, #F8FAFC 0%, #EEF2FF 40%, #FDF2F8 100%)">
+            <Box
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                bg="rgba(255, 255, 255, 0.8)"
+                bg="rgba(255, 255, 255, 0.92)"
                 w="100%"
-                p="10px"
-                borderBottom="1px solid rgba(226, 232, 240, 0.5)"
+                px={{ base: 3, md: 5 }}
+                py={3}
+                borderBottom="1px solid"
+                borderColor="gray.100"
                 position="fixed"
                 top="0"
                 left="0"
                 right="0"
                 zIndex="1000"
-                boxShadow="md"
-                backdropFilter="blur(10px)"
+                boxShadow="sm"
+                backdropFilter="blur(12px)"
             >
-                <HStack spacing={4}>
+                <HStack spacing={3}>
                     <Button
                         as="a"
                         href="/home"
-                        colorScheme="pink"
-                        size="md"
+                        size="sm"
                         bg="rgba(255, 182, 193, 0.9)"
-                        _hover={{ bg: "rgba(255, 182, 193, 1)" }}
+                        _hover={{ bg: 'rgba(255, 182, 193, 1)' }}
                         color="white"
-                        boxShadow="lg"
                         borderRadius="full"
-                        backdropFilter="blur(5px)"
+                        fontWeight="medium"
                     >
-                        Înapoi la pagina principală
+                        Acasă
                     </Button>
                     <Button
                         as="a"
                         href="/chats"
-                        colorScheme="pink"
-                        size="md"
+                        size="sm"
                         bg="rgba(255, 182, 193, 0.9)"
-                        _hover={{ bg: "rgba(255, 182, 193, 1)" }}
+                        _hover={{ bg: 'rgba(255, 182, 193, 1)' }}
                         color="white"
-                        boxShadow="lg"
                         borderRadius="full"
-                        backdropFilter="blur(5px)"
+                        fontWeight="medium"
+                        display={{ base: 'none', sm: 'inline-flex' }}
                     >
-                        Vezi conversații
+                        Conversații
                     </Button>
                 </HStack>
-                <Box flex="0" display="flex" justifyContent="center">
-                    <GradientText
-                        colors={["#FFB6C1", "#87CEEB", "#98FB98"]}
-                        animationSpeed={3}
-                        showBorder={false}
-                        className="custom-class">
-                        AskYourProf
-                    </GradientText>
-                </Box>
+                <GradientText
+                    colors={['#6366F1', '#8B5CF6', '#EC4899']}
+                    animationSpeed={3}
+                    showBorder={false}
+                    className="custom-class"
+                >
+                    AskYourProf
+                </GradientText>
                 <MenuRoot closeOnSelect={false}>
                     <MenuTrigger asChild>
-                        <Button size="lg"
-                            variant="ghost"
-                            _hover={{ bg: 'gray.300' }}
-                            _active={{ bg: 'gray.300' }}
-                            _focus={{ bg: 'gray.300' }}
-                            _expanded={{ bg: 'gray.300' }}>
+                        <Button size="lg" variant="ghost" _hover={{ bg: 'gray.100' }}>
                             <Avatar.Root>
-                                <Avatar.Fallback name={user.name} />
-                                <Avatar.Image src={user.pic} />
+                                <Avatar.Fallback name={user?.name} />
+                                <Avatar.Image src={user?.pic} />
                             </Avatar.Root>
-                            <i className="fa-solid fa-chevron-down" style={{ color: 'black' }}></i>
+                            <i className="fa-solid fa-chevron-down" style={{ color: 'black' }} />
                         </Button>
                     </MenuTrigger>
                     <MenuContent bg="white">
-                        <MenuItem
-                            bg="white"
-                            color="black"
-                            _hover={{ background: 'gray.300' }}
-                        >
+                        <MenuItem bg="white" color="black" _hover={{ background: 'gray.100' }}>
                             <UserProfileModal user={user} />
                             Profilul meu
                         </MenuItem>
                         <MenuSeparator color="grey" />
-                        <MenuItem
-                            bg="white"
-                            color="black"
-                            _hover={{ background: 'gray.300' }}
-                            onClick={logoutHandler}
-                        >Logout</MenuItem>
+                        <MenuItem bg="white" color="black" _hover={{ background: 'gray.100' }} onClick={logoutHandler}>
+                            Logout
+                        </MenuItem>
                     </MenuContent>
                 </MenuRoot>
             </Box>
 
-            <Flex direction="column" alignItems="center" p="4" w="100%">
-  {/* Heading Section */}
-  <Box
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    p={8}
-    bgGradient="linear(to-r, #FFB6C1, #87CEEB)"
-    w="100%"
-    maxW="800px"
-    borderRadius="2xl"
-    boxShadow="2xl"
-    textAlign="center"
-    transition="all 0.3s ease-in-out"
-    _hover={{ transform: 'scale(1.02)' }}
-    animation="fadeIn 0.5s ease-in-out"
-    sx={{
-      '@keyframes fadeIn': {
-        '0%': { opacity: 0, transform: 'translateY(20px)' },
-        '100%': { opacity: 1, transform: 'translateY(0)' },
-      },
-    }}
-    mt={10}
-    mb={6} // Added margin-bottom to separate the heading from the form
-  >
-    <VStack spacing={6}>
-      <Heading
-        fontSize="4xl"
-        fontWeight="bold"
-        fontFamily="work sans"
-        color="white"
-        textShadow="2px 2px 4px rgba(0,0,0,0.2)"
-      >
-        Încarcă un nou examen
-      </Heading>
-    </VStack>
-  </Box>
+            <Container maxW="720px" px={4} pt={28} pb={16}>
+                <Box textAlign="center" mb={10}>
+                    <Icon as={FaCloudUploadAlt} boxSize={12} color="indigo.500" mb={5} />
+                    <Heading
+                        fontSize={{ base: '2xl', md: '3xl' }}
+                        fontWeight="bold"
+                        color="gray.800"
+                        mb={3}
+                        letterSpacing="-0.02em"
+                    >
+                        Încarcă un nou examen
+                    </Heading>
+                    <Text color="gray.600" fontSize="md" lineHeight="1.7">
+                        Adaugă un model de examen în format PDF pentru elevi
+                    </Text>
+                </Box>
 
-  {/* Form Section */}
-  <Box
-    bg="white"
-    p="8"
-    borderRadius="lg"
-    boxShadow="lg"
-    maxW="800px"
-    w="90%"
-    mt="4"
-  >
-    <Fieldset.Root size="lg" maxW="800px">
-      <Stack alignItems="center" p="4">
-        {/* Optional Helper Text */}
-      </Stack>
+                <Card.Root bg="white" borderRadius="2xl" boxShadow="xl" overflow="hidden">
+                    <Box h="5px" bg="linear-gradient(90deg, #6366F1, #8B5CF6, #EC4899)" />
+                    <Card.Body p={{ base: 6, md: 8 }}>
+                        <VStack spacing={7} align="stretch" as="form" onSubmit={handleSubmit}>
+                            <Box>
+                                <Text fontSize="md" fontWeight="semibold" color="gray.700" mb={2}>
+                                    Titlul examenului
+                                </Text>
+                                <Input
+                                    name="title"
+                                    type="text"
+                                    placeholder="Introduceți titlul examenului"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    size="lg"
+                                    h="52px"
+                                    required
+                                    {...inputStyles}
+                                />
+                            </Box>
 
-      <Fieldset.Content>
-        <Text fontSize="xl" fontWeight="bold" color="black" mb={2}>
-          Titlul Examenului
-        </Text>
-        <Input
-          name="title"
-          type="text"
-          placeholder="Introduceți titlul examenului"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          fontSize="md"
-          p="6"
-          required
-        />
+                            <Box>
+                                <Text fontSize="md" fontWeight="semibold" color="gray.700" mb={2}>
+                                    Descrierea examenului
+                                </Text>
+                                <Textarea
+                                    name="description"
+                                    placeholder="Introduceți descrierea examenului"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    minH="120px"
+                                    fontSize="md"
+                                    lineHeight="1.6"
+                                    {...inputStyles}
+                                />
+                            </Box>
 
-        <Text fontSize="xl" fontWeight="bold" color="black" mb={2}>
-          Descrierea Examenului
-        </Text>
-        <Input
-          as="textarea"
-          name="description"
-          placeholder="Introduceți descrierea examenului"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          minH="150px"
-          fontSize="md"
-          p="6"
-        />
+                            <Box>
+                                <Text fontSize="md" fontWeight="semibold" color="gray.700" mb={2}>
+                                    Fișier PDF
+                                </Text>
+                                <Box
+                                    border="2px dashed"
+                                    borderColor={pdf ? 'indigo.300' : 'gray.200'}
+                                    borderRadius="2xl"
+                                    p={8}
+                                    textAlign="center"
+                                    bg={pdf ? 'indigo.50' : 'gray.50'}
+                                    transition="all 0.2s"
+                                    _hover={{ borderColor: 'indigo.400', bg: 'indigo.50' }}
+                                    position="relative"
+                                >
+                                    <VStack spacing={3}>
+                                        <Icon as={FaFilePdf} boxSize={10} color={pdf ? 'indigo.500' : 'gray.400'} />
+                                        {pdf ? (
+                                            <Text fontSize="md" fontWeight="medium" color="indigo.700">
+                                                {pdf.name}
+                                            </Text>
+                                        ) : (
+                                            <Text fontSize="md" color="gray.500" lineHeight="1.5">
+                                                Trage fișierul aici sau apasă pentru a selecta
+                                            </Text>
+                                        )}
+                                        <Text fontSize="sm" color="gray.400">
+                                            Doar fișiere .pdf
+                                        </Text>
+                                    </VStack>
+                                    <Input
+                                        type="file"
+                                        accept=".pdf"
+                                        onChange={(e) => setPdf(e.target.files[0])}
+                                        position="absolute"
+                                        top="0"
+                                        left="0"
+                                        w="100%"
+                                        h="100%"
+                                        opacity="0"
+                                        cursor="pointer"
+                                    />
+                                </Box>
+                            </Box>
 
-        <Text fontSize="xl" fontWeight="bold" color="black" mb={2}>
-          Fișier PDF al Examenului
-        </Text>
-        <Flex direction="row" align="center" width="100%">
-          <Input
-            type="file"
-            p={1.5}
-            accept=".pdf"
-            onChange={(e) => setPdf(e.target.files[0])}
-            color="black"
-          />
-        </Flex>
-      </Fieldset.Content>
+                            {error && (
+                                <Box bg="red.50" color="red.800" p={4} borderRadius="xl" fontSize="md" lineHeight="1.5">
+                                    {error}
+                                </Box>
+                            )}
 
-      <Button
-        type="submit"
-        alignSelf="center"
-        bg="lightblue"
-        color="white"
-        _hover={{ bg: "lightblue.100" }}
-        _active={{ bg: "white", color: "lightblue", border: "2px solid lightblue" }}
-        _focus={{ boxShadow: "none" }}
-        mt="4"
-        width="100%"
-        onClick={handleSubmit}
-        isLoading={loading}
-        loadingText="Se încarcă..."
-      >
-        Încarcă Examen
-      </Button>
-    </Fieldset.Root>
-
-    {error && (
-      <Flex
-        justifyContent="center"
-        alignItems="center"
-        bg="red.100"
-        color="red.800"
-        p="4"
-        mt="4"
-        borderRadius="md"
-        position="relative"
-        bottom="0"
-        width="100%"
-      >
-        {error}
-      </Flex>
-    )}
-  </Box>
-</Flex>
-    </Flex>
-  );
+                            <Button
+                                type="submit"
+                                size="lg"
+                                h="52px"
+                                w="100%"
+                                bg="linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)"
+                                _hover={{ bg: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)' }}
+                                color="white"
+                                fontWeight="semibold"
+                                fontSize="md"
+                                borderRadius="xl"
+                                loading={loading}
+                                loadingText="Se încarcă..."
+                                disabled={!title || !pdf}
+                                _disabled={{ opacity: 0.6, cursor: 'not-allowed' }}
+                            >
+                                Încarcă examen
+                            </Button>
+                        </VStack>
+                    </Card.Body>
+                </Card.Root>
+            </Container>
+        </Box>
+    );
 };
 
-export default UploadExam; 
+export default UploadExam;

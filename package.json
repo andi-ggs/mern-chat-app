@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon backend/server.js"
+    "start": "nodemon backend/server.js",
+    "seed:quizzes": "node backend/scripts/seedQuizzes.js"
   },
   "author": "Andreea Georgescu",
   "license": "ISC",

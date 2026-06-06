@@ -1,7 +1,6 @@
 import {
   Text,
   Box,
-  Button,
   Spinner,
   Input,
   Flex,
@@ -172,8 +171,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       {selectedChat ? (
         <Flex direction="column" h="100%" w="100%">
           <Flex
-            px={4}
-            py={3}
+            px={5}
+            py={3.5}
             align="center"
             justify="space-between"
             borderBottomWidth="1px"
@@ -188,7 +187,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 aria-label="Înapoi"
                 variant="ghost"
                 size="sm"
-                borderRadius="full"
+                borderRadius="xl"
+                color="gray.600"
+                _hover={{ bg: 'gray.100' }}
                 onClick={() => setSelectedChat('')}
               >
                 <FaArrowLeft />
@@ -196,10 +197,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
               {selectedChat.isGroupChat ? (
                 <Flex
-                  w="42px"
-                  h="42px"
+                  w="44px"
+                  h="44px"
                   borderRadius="full"
-                  bg="purple.100"
+                  bg="purple.50"
+                  borderWidth="2px"
+                  borderColor="purple.100"
                   align="center"
                   justify="center"
                   flexShrink={0}
@@ -214,17 +217,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               )}
 
               <Box minW={0}>
-                <Text fontWeight="semibold" fontSize="md" color="gray.800" truncate>
+                <Text fontWeight="bold" fontSize="md" color="gray.800" truncate>
                   {chatTitle}
                 </Text>
                 <HStack gap={1.5}>
                   <Box
-                    w="8px"
-                    h="8px"
+                    w="7px"
+                    h="7px"
                     borderRadius="full"
                     bg={socketConnected ? 'green.400' : 'gray.300'}
                   />
-                  <Text fontSize="xs" color="gray.500">
+                  <Text fontSize="xs" color="gray.500" fontWeight="medium">
                     {isTyping
                       ? 'scrie...'
                       : socketConnected
@@ -253,7 +256,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             display="flex"
             flexDir="column"
             justifyContent="flex-end"
-            bg="#f8f9fa"
+            bg="#eef0f3"
             overflow="hidden"
             position="relative"
           >
@@ -262,29 +265,33 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <Spinner size="lg" color="blue.400" />
               </Flex>
             ) : (
-              <Box className="messages" flex={1} px={2} py={4}>
+              <Box className="messages" flex={1} px={1} py={4}>
                 <ScrollableChat messages={messages} />
               </Box>
             )}
 
             {isTyping && (
-              <Box px={4} pb={1}>
+              <Box px={5} pb={1}>
                 <Lottie options={defaultOptions} width={50} height={30} />
               </Box>
             )}
 
-            <Box px={4} py={3} bg="white" borderTopWidth="1px" borderColor="gray.100">
+            <Box px={5} py={4} bg="white" borderTopWidth="1px" borderColor="gray.100">
               <Flex
                 align="center"
-                gap={2}
+                gap={3}
                 bg="gray.50"
                 borderRadius="2xl"
                 px={4}
                 py={2}
                 borderWidth="1px"
                 borderColor="gray.200"
-                _focusWithin={{ borderColor: 'blue.300', boxShadow: '0 0 0 1px #63B3ED' }}
-                transition="all 0.15s ease"
+                _focusWithin={{
+                  borderColor: 'blue.300',
+                  boxShadow: '0 0 0 3px rgba(0, 132, 255, 0.12)',
+                  bg: 'white',
+                }}
+                transition="all 0.18s ease"
               >
                 <Input
                   flex={1}
@@ -301,12 +308,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 />
                 <IconButton
                   aria-label="Trimite mesaj"
-                  size="sm"
-                  borderRadius="full"
+                  size="md"
+                  borderRadius="xl"
                   colorPalette="blue"
                   bg="#0084ff"
                   color="white"
-                  _hover={{ bg: '#0073e6' }}
+                  _hover={{ bg: '#0073e6', transform: 'scale(1.04)' }}
+                  _active={{ transform: 'scale(0.97)' }}
+                  transition="all 0.15s ease"
                   disabled={!newMessage.trim()}
                   onClick={sendMessage}
                 >
@@ -322,27 +331,30 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           align="center"
           justify="center"
           h="100%"
-          bg="#f8f9fa"
-          gap={4}
-          px={6}
+          bg="#eef0f3"
+          gap={5}
+          px={8}
         >
           <Flex
-            w="80px"
-            h="80px"
-            borderRadius="full"
-            bg="blue.50"
+            w="88px"
+            h="88px"
+            borderRadius="2xl"
+            bg="white"
+            boxShadow="0 4px 20px rgba(0, 0, 0, 0.06)"
             align="center"
             justify="center"
           >
-            <Text fontSize="3xl">💬</Text>
+            <Text fontSize="4xl">💬</Text>
           </Flex>
-          <Text fontSize="xl" fontWeight="semibold" color="gray.700" textAlign="center">
-            Selectează o conversație
-          </Text>
-          <Text fontSize="sm" color="gray.500" textAlign="center" maxW="300px">
-            Alege o conversație din lista din stânga sau caută un utilizator nou pentru a începe
-            să discuți.
-          </Text>
+          <Box textAlign="center">
+            <Text fontSize="xl" fontWeight="bold" color="gray.700" mb={2}>
+              Selectează o conversație
+            </Text>
+            <Text fontSize="sm" color="gray.500" maxW="320px" lineHeight="1.6">
+              Alege o conversație din lista din stânga sau caută un utilizator nou pentru a începe
+              să discuți.
+            </Text>
+          </Box>
         </Flex>
       )}
       {message && (
@@ -364,9 +376,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 : 'red.800'
           }
           p={3}
-          mx={4}
+          mx={5}
           mb={3}
-          borderRadius="lg"
+          borderRadius="xl"
+          fontSize="sm"
         >
           {message}
         </Flex>

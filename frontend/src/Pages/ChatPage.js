@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Flex } from '@chakra-ui/react'
 import { ChatState } from '../context/chatProvider'
-import SideDrawer from '../appComponents/mischellaneous/SideDrawer'
+import { NAVBAR_HEIGHT } from '../appComponents/mischellaneous/SideDrawer'
 import MyChats from '../appComponents/mischellaneous/MyChats'
 import ChatBox from '../appComponents/mischellaneous/ChatBox'
 
@@ -14,16 +14,15 @@ const ChatPage = () => {
   }
 
   return (
-    <Box w="100%" minH="100vh" bg="#f0f2f5">
-      <SideDrawer />
+    <Box w="100%" minH={`calc(100vh - ${NAVBAR_HEIGHT}px)`} bg="#eef0f3">
       <Flex
-        h="calc(100vh - 70px)"
-        mt="70px"
-        maxW="1600px"
+        h={`calc(100vh - ${NAVBAR_HEIGHT}px)`}
+        maxW="1440px"
         mx="auto"
-        px={{ base: 0, md: 4 }}
-        pb={{ base: 0, md: 3 }}
-        gap={{ base: 0, md: 3 }}
+        px={{ base: 0, md: 5 }}
+        pb={{ base: 0, md: 4 }}
+        pt={{ base: 0, md: 1 }}
+        gap={{ base: 0, md: 4 }}
         overflow="hidden"
       >
         <MyChats fetchAgain={fetchAgain} />

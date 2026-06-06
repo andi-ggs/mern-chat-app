@@ -1,0 +1,155 @@
+[
+  {
+    "title": "Teorema lui Pitagora și aplicații",
+    "description": "Test pentru evaluarea cunoștințelor despre triunghiul dreptunghic, teorema lui Pitagora și proprietățile triunghiurilor.",
+    "questions": [
+      {
+        "questionText": "Într-un triunghi dreptunghic, catetele au lungimile de 3 cm și 4 cm. Cât este ipotenuza?",
+        "options": [
+          { "text": "5 cm", "isCorrect": true },
+          { "text": "7 cm", "isCorrect": false },
+          { "text": "12 cm", "isCorrect": false },
+          { "text": "25 cm", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este aria unui triunghi dreptunghic cu catetele de 6 cm și 8 cm?",
+        "options": [
+          { "text": "14 cm²", "isCorrect": false },
+          { "text": "24 cm²", "isCorrect": true },
+          { "text": "48 cm²", "isCorrect": false },
+          { "text": "96 cm²", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Într-un triunghi dreptunghic, ipotenuza măsoară 13 cm, iar o catetă are 5 cm. Cât este lungimea celeilalte catete?",
+        "options": [
+          { "text": "8 cm", "isCorrect": false },
+          { "text": "10 cm", "isCorrect": false },
+          { "text": "12 cm", "isCorrect": true },
+          { "text": "18 cm", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Suma măsurilor unghiurilor interioare ale unui triunghi este:",
+        "options": [
+          { "text": "90°", "isCorrect": false },
+          { "text": "180°", "isCorrect": true },
+          { "text": "270°", "isCorrect": false },
+          { "text": "360°", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Într-un triunghi dreptunghic isoscel, catetele au lungimea de 6 cm. Cât este ipotenuza?",
+        "options": [
+          { "text": "6 cm", "isCorrect": false },
+          { "text": "6√2 cm", "isCorrect": true },
+          { "text": "12 cm", "isCorrect": false },
+          { "text": "36 cm", "isCorrect": false }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Patrulatere",
+    "description": "Test pentru evaluarea cunoștințelor despre patrulatere: dreptunghi, pătrat, romb, trapez și proprietățile lor.",
+    "questions": [
+      {
+        "questionText": "Care este suma măsurilor unghiurilor interioare ale unui patrulater convex?",
+        "options": [
+          { "text": "180°", "isCorrect": false },
+          { "text": "270°", "isCorrect": false },
+          { "text": "360°", "isCorrect": true },
+          { "text": "540°", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Un dreptunghi are lungimea de 12 cm și lățimea de 5 cm. Care este aria dreptunghiului?",
+        "options": [
+          { "text": "17 cm²", "isCorrect": false },
+          { "text": "34 cm²", "isCorrect": false },
+          { "text": "60 cm²", "isCorrect": true },
+          { "text": "120 cm²", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Un pătrat are diagonala de 10√2 cm. Care este lungimea laturii?",
+        "options": [
+          { "text": "5 cm", "isCorrect": false },
+          { "text": "10 cm", "isCorrect": true },
+          { "text": "20 cm", "isCorrect": false },
+          { "text": "100 cm", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Un trapez isoscel are bazele de 10 cm și 6 cm, iar înălțimea de 4 cm. Care este aria trapezului?",
+        "options": [
+          { "text": "24 cm²", "isCorrect": false },
+          { "text": "32 cm²", "isCorrect": true },
+          { "text": "40 cm²", "isCorrect": false },
+          { "text": "64 cm²", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Un romb are diagonalele de 6 cm și 8 cm. Care este aria rombului?",
+        "options": [
+          { "text": "14 cm²", "isCorrect": false },
+          { "text": "24 cm²", "isCorrect": true },
+          { "text": "48 cm²", "isCorrect": false },
+          { "text": "96 cm²", "isCorrect": false }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Cercul",
+    "description": "Test pentru evaluarea cunoștințelor despre cerc: rază, diametru, circumferință, arie și unghiuri în cerc.",
+    "questions": [
+      {
+        "questionText": "Cât este lungimea circumferinței unui cerc cu raza de 7 cm? (Folosiți π ≈ 3,14)",
+        "options": [
+          { "text": "21,98 cm", "isCorrect": false },
+          { "text": "43,96 cm", "isCorrect": true },
+          { "text": "49 cm", "isCorrect": false },
+          { "text": "153,86 cm", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Cât este aria unui cerc cu raza de 5 cm? (Folosiți π ≈ 3,14)",
+        "options": [
+          { "text": "15,7 cm²", "isCorrect": false },
+          { "text": "31,4 cm²", "isCorrect": false },
+          { "text": "78,5 cm²", "isCorrect": true },
+          { "text": "157 cm²", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "O tangentă la un cerc este perpendiculară pe raza dusă în punctul de tangență. Măsura unghiului format este:",
+        "options": [
+          { "text": "45°", "isCorrect": false },
+          { "text": "60°", "isCorrect": false },
+          { "text": "90°", "isCorrect": true },
+          { "text": "180°", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Într-un cerc, un arc care subîntinde un unghi la centru de 60° corespunde unui unghi la centru de:",
+        "options": [
+          { "text": "30°", "isCorrect": false },
+          { "text": "60°", "isCorrect": true },
+          { "text": "120°", "isCorrect": false },
+          { "text": "180°", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Dacă diametrul unui cerc este de 14 cm, care este lungimea razei?",
+        "options": [
+          { "text": "3,5 cm", "isCorrect": false },
+          { "text": "7 cm", "isCorrect": true },
+          { "text": "14 cm", "isCorrect": false },
+          { "text": "28 cm", "isCorrect": false }
+        ]
+      }
+    ]
+  }
+]

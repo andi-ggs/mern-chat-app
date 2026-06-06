@@ -11,13 +11,13 @@ import { ChatState } from '../context/chatProvider'
 
 const getBubbleRadius = (isOwn, isGroupedWithPrev, isGroupedWithNext) => {
   if (isOwn) {
-    if (isGroupedWithPrev && isGroupedWithNext) return '6px 18px 6px 18px'
-    if (isGroupedWithPrev) return '6px 18px 18px 18px'
+    if (isGroupedWithPrev && isGroupedWithNext) return '18px 18px 18px 18px'
+    if (isGroupedWithPrev) return '18px 18px 18px 18px'
     if (isGroupedWithNext) return '18px 18px 6px 18px'
     return '18px 18px 4px 18px'
   }
-  if (isGroupedWithPrev && isGroupedWithNext) return '18px 6px 18px 6px'
-  if (isGroupedWithPrev) return '18px 6px 18px 18px'
+  if (isGroupedWithPrev && isGroupedWithNext) return '18px 18px 18px 18px'
+  if (isGroupedWithPrev) return '18px 18px 18px 18px'
   if (isGroupedWithNext) return '18px 18px 18px 6px'
   return '18px 18px 18px 4px'
 }
@@ -52,7 +52,7 @@ const ScrollableChat = ({ messages }) => {
               justify={isOwn ? 'flex-end' : 'flex-start'}
               align="flex-end"
               gap={2}
-              px={2}
+              px={3}
               mb={groupedWithNext ? 1 : 3}
               mt={groupedWithPrev ? 0 : 1}
             >
@@ -69,17 +69,23 @@ const ScrollableChat = ({ messages }) => {
                 </Box>
               )}
 
-              <Box maxW={{ base: '82%', md: '65%' }} position="relative">
+              <Box maxW={{ base: '82%', md: '62%' }} position="relative">
                 <Box
                   px={4}
-                  py={2}
-                  bg={isOwn ? '#0084ff' : '#f0f0f0'}
+                  py={2.5}
+                  bg={isOwn ? '#0084ff' : 'white'}
                   color={isOwn ? 'white' : 'gray.800'}
                   borderRadius={getBubbleRadius(isOwn, groupedWithPrev, groupedWithNext)}
-                  boxShadow={isOwn ? '0 1px 2px rgba(0,132,255,0.25)' : '0 1px 2px rgba(0,0,0,0.06)'}
+                  boxShadow={
+                    isOwn
+                      ? '0 2px 8px rgba(0, 132, 255, 0.22)'
+                      : '0 1px 4px rgba(0, 0, 0, 0.07)'
+                  }
+                  borderWidth={isOwn ? 0 : '1px'}
+                  borderColor="gray.100"
                   wordBreak="break-word"
                 >
-                  <Text fontSize="sm" lineHeight="1.5">
+                  <Text fontSize="sm" lineHeight="1.55">
                     {m.content}
                   </Text>
                 </Box>

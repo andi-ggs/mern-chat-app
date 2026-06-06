@@ -1,0 +1,155 @@
+[
+  {
+    "title": "Arii și Volume - Cubul și Paralelipipedul",
+    "description": "Probleme de geometrie în spațiu extrase din modelele pentru Evaluarea Națională.",
+    "questions": [
+      {
+        "questionText": "Care este volumul unui cub cu muchia de 3 cm?",
+        "options": [
+          { "text": "9 cm³", "isCorrect": false },
+          { "text": "18 cm³", "isCorrect": false },
+          { "text": "27 cm³", "isCorrect": true },
+          { "text": "36 cm³", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Aria totală a unui cub cu muchia de 4 cm este:",
+        "options": [
+          { "text": "64 cm²", "isCorrect": false },
+          { "text": "96 cm²", "isCorrect": true },
+          { "text": "16 cm²", "isCorrect": false },
+          { "text": "48 cm²", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Volumul unui paralelipiped dreptunghic cu dimensiunile 5 cm, 4 cm și 3 cm este:",
+        "options": [
+          { "text": "12 cm³", "isCorrect": false },
+          { "text": "47 cm³", "isCorrect": false },
+          { "text": "60 cm³", "isCorrect": true },
+          { "text": "120 cm³", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Aria unei fețe a unui cub cu muchia de 7 cm este:",
+        "options": [
+          { "text": "28 cm²", "isCorrect": false },
+          { "text": "42 cm²", "isCorrect": false },
+          { "text": "49 cm²", "isCorrect": true },
+          { "text": "343 cm²", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Diagonala spațială a unui cub cu muchia de 3 cm are lungimea:",
+        "options": [
+          { "text": "3√2 cm", "isCorrect": false },
+          { "text": "3√3 cm", "isCorrect": true },
+          { "text": "9 cm", "isCorrect": false },
+          { "text": "6 cm", "isCorrect": false }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Piramida Regulată - Arii și Volume",
+    "description": "Exerciții tip Evaluare Națională despre piramide regulate: volume, arii laterale și elemente caracteristice.",
+    "questions": [
+      {
+        "questionText": "Volumul unei piramide regulate cu baza pătrată de latura 6 cm și înălțimea de 4 cm este:",
+        "options": [
+          { "text": "144 cm³", "isCorrect": false },
+          { "text": "48 cm³", "isCorrect": true },
+          { "text": "72 cm³", "isCorrect": false },
+          { "text": "24 cm³", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "O piramidă triunghiulară regulată are câte fețe?",
+        "options": [
+          { "text": "3", "isCorrect": false },
+          { "text": "4", "isCorrect": true },
+          { "text": "5", "isCorrect": false },
+          { "text": "6", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Aria laterală a unei piramide pătratice regulate cu latura bazei de 8 cm și apotema feței laterale de 10 cm este:",
+        "options": [
+          { "text": "80 cm²", "isCorrect": false },
+          { "text": "120 cm²", "isCorrect": false },
+          { "text": "160 cm²", "isCorrect": true },
+          { "text": "320 cm²", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Volumul unei piramide cu baza dreptunghiulară de dimensiunile 8 cm și 6 cm, și înălțimea de 5 cm, este:",
+        "options": [
+          { "text": "240 cm³", "isCorrect": false },
+          { "text": "80 cm³", "isCorrect": true },
+          { "text": "120 cm³", "isCorrect": false },
+          { "text": "40 cm³", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Înălțimea unei piramide pătratice regulate cu latura bazei de 12 cm și apotema feței laterale de 10 cm este:",
+        "options": [
+          { "text": "6 cm", "isCorrect": false },
+          { "text": "8 cm", "isCorrect": true },
+          { "text": "10 cm", "isCorrect": false },
+          { "text": "12 cm", "isCorrect": false }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Corpuri Rotunde - Cilindru, Con și Sferă",
+    "description": "Probleme de calcul cu cilindrul, conul și sfera, în stilul subiectelor de Evaluare Națională.",
+    "questions": [
+      {
+        "questionText": "Volumul unui cilindru circular drept cu raza bazei de 3 cm și înălțimea de 10 cm este:",
+        "options": [
+          { "text": "30π cm³", "isCorrect": false },
+          { "text": "60π cm³", "isCorrect": false },
+          { "text": "90π cm³", "isCorrect": true },
+          { "text": "900π cm³", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Aria suprafeței unei sfere cu raza de 5 cm este:",
+        "options": [
+          { "text": "25π cm²", "isCorrect": false },
+          { "text": "50π cm²", "isCorrect": false },
+          { "text": "75π cm²", "isCorrect": false },
+          { "text": "100π cm²", "isCorrect": true }
+        ]
+      },
+      {
+        "questionText": "Volumul unui con circular drept cu raza bazei de 6 cm și înălțimea de 8 cm este:",
+        "options": [
+          { "text": "288π cm³", "isCorrect": false },
+          { "text": "96π cm³", "isCorrect": true },
+          { "text": "48π cm³", "isCorrect": false },
+          { "text": "144π cm³", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Un con și un cilindru au aceeași bază și aceeași înălțime. Raportul dintre volumul conului și volumul cilindrului este:",
+        "options": [
+          { "text": "1 : 2", "isCorrect": false },
+          { "text": "1 : 3", "isCorrect": true },
+          { "text": "2 : 3", "isCorrect": false },
+          { "text": "3 : 1", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Aria laterală a unui cilindru circular drept cu raza de 4 cm și înălțimea de 7 cm este:",
+        "options": [
+          { "text": "28π cm²", "isCorrect": false },
+          { "text": "56π cm²", "isCorrect": true },
+          { "text": "112π cm²", "isCorrect": false },
+          { "text": "14π cm²", "isCorrect": false }
+        ]
+      }
+    ]
+  }
+]

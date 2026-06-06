@@ -1,0 +1,155 @@
+[
+  {
+    "title": "Calcul Algebric - Evaluarea Națională",
+    "description": "Test de verificare a cunoștințelor despre formule de calcul prescurtat și descompuneri în factori.",
+    "questions": [
+      {
+        "questionText": "Care este rezultatul calculului (x + 2)² ?",
+        "options": [
+          { "text": "x² + 4", "isCorrect": false },
+          { "text": "x² + 4x + 4", "isCorrect": true },
+          { "text": "x² + 2x + 4", "isCorrect": false },
+          { "text": "2x² + 4", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este rezultatul calculului (3x - 1)(3x + 1) ?",
+        "options": [
+          { "text": "9x² - 1", "isCorrect": true },
+          { "text": "9x² + 1", "isCorrect": false },
+          { "text": "6x² - 2", "isCorrect": false },
+          { "text": "3x² - 1", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este descompunerea în factori a expresiei x² - 5x + 6 ?",
+        "options": [
+          { "text": "(x - 2)(x - 3)", "isCorrect": true },
+          { "text": "(x + 2)(x + 3)", "isCorrect": false },
+          { "text": "(x - 1)(x - 6)", "isCorrect": false },
+          { "text": "(x - 5)(x + 1)", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este rezultatul calculului (2x + 3)² ?",
+        "options": [
+          { "text": "4x² + 9", "isCorrect": false },
+          { "text": "4x² + 6x + 9", "isCorrect": false },
+          { "text": "4x² + 12x + 9", "isCorrect": true },
+          { "text": "2x² + 12x + 9", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este descompunerea în factori a expresiei 4x² - 9 ?",
+        "options": [
+          { "text": "(2x - 3)²", "isCorrect": false },
+          { "text": "(2x + 3)(2x - 3)", "isCorrect": true },
+          { "text": "(4x - 3)(x + 3)", "isCorrect": false },
+          { "text": "2(x² - 9)", "isCorrect": false }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Ecuații și Inecuații - Evaluarea Națională",
+    "description": "Test de verificare a cunoștințelor despre rezolvarea ecuațiilor de gradul I, ecuațiilor de gradul II simple și a inecuațiilor.",
+    "questions": [
+      {
+        "questionText": "Care este soluția ecuației 2x + 5 = 13 ?",
+        "options": [
+          { "text": "x = 3", "isCorrect": false },
+          { "text": "x = 4", "isCorrect": true },
+          { "text": "x = 5", "isCorrect": false },
+          { "text": "x = 9", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este soluția ecuației 3(x - 2) = 15 ?",
+        "options": [
+          { "text": "x = 5", "isCorrect": false },
+          { "text": "x = 6", "isCorrect": false },
+          { "text": "x = 7", "isCorrect": true },
+          { "text": "x = 9", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este mulțimea soluțiilor inecuației 2x - 1 > 5 ?",
+        "options": [
+          { "text": "x > 2", "isCorrect": false },
+          { "text": "x > 3", "isCorrect": true },
+          { "text": "x < 3", "isCorrect": false },
+          { "text": "x ≥ 3", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care sunt soluțiile ecuației x² = 16 ?",
+        "options": [
+          { "text": "x = 4", "isCorrect": false },
+          { "text": "x = -4", "isCorrect": false },
+          { "text": "x = 4 sau x = -4", "isCorrect": true },
+          { "text": "x = 8 sau x = -8", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este soluția ecuației (x + 1)/2 = 4 ?",
+        "options": [
+          { "text": "x = 3", "isCorrect": false },
+          { "text": "x = 5", "isCorrect": false },
+          { "text": "x = 7", "isCorrect": true },
+          { "text": "x = 9", "isCorrect": false }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Funcții - Evaluarea Națională",
+    "description": "Test de verificare a cunoștințelor despre funcții liniare, reprezentarea grafică și proprietățile acestora.",
+    "questions": [
+      {
+        "questionText": "Dacă f(x) = 2x + 3, care este valoarea f(2) ?",
+        "options": [
+          { "text": "5", "isCorrect": false },
+          { "text": "7", "isCorrect": true },
+          { "text": "8", "isCorrect": false },
+          { "text": "10", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care este panta dreptei care trece prin punctele A(1, 2) și B(3, 6) ?",
+        "options": [
+          { "text": "1", "isCorrect": false },
+          { "text": "2", "isCorrect": true },
+          { "text": "3", "isCorrect": false },
+          { "text": "4", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Pentru funcția f(x) = -x + 5, care este ordonata la origine (intersecția cu axa Oy) ?",
+        "options": [
+          { "text": "-1", "isCorrect": false },
+          { "text": "0", "isCorrect": false },
+          { "text": "5", "isCorrect": true },
+          { "text": "-5", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Care dintre următoarele funcții are graficul care trece prin punctul (0, -1) ?",
+        "options": [
+          { "text": "f(x) = x + 1", "isCorrect": false },
+          { "text": "f(x) = x - 1", "isCorrect": true },
+          { "text": "f(x) = -x + 1", "isCorrect": false },
+          { "text": "f(x) = 2x", "isCorrect": false }
+        ]
+      },
+      {
+        "questionText": "Două drepte sunt paralele dacă și numai dacă:",
+        "options": [
+          { "text": "Au aceeași ordonată la origine", "isCorrect": false },
+          { "text": "Au aceeași pantă", "isCorrect": true },
+          { "text": "Se intersectează într-un singur punct", "isCorrect": false },
+          { "text": "Au pante de semne opuse", "isCorrect": false }
+        ]
+      }
+    ]
+  }
+]

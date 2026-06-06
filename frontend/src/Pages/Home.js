@@ -3,388 +3,319 @@ import RecommendedForYou from '../components/recommendations/RecommendedForYou';
 import {
   Box,
   VStack,
+  HStack,
   Heading,
   Text,
   Button,
   Card,
-  HStack,
   Badge,
   Container,
   Flex,
-  Icon
+  Icon,
+  SimpleGrid,
 } from '@chakra-ui/react';
-import { FaComments, FaBookReader, FaPencilAlt, FaFileUpload, FaFilePdf } from 'react-icons/fa';
-import { useHistory } from 'react-router-dom';
-import GradientText from '../animations/gradientText';
-import UserProfileModal from '../appComponents/mischellaneous/UserProfileModal';
 import {
-    MenuContent,
-    MenuItem,
-    MenuRoot,
-    MenuTrigger,
-    MenuSeparator,
-} from "../components/ui/menu";
-import { Avatar } from '@chakra-ui/react';
+  FaComments,
+  FaBookReader,
+  FaPencilAlt,
+  FaFileUpload,
+  FaFilePdf,
+  FaRocket,
+} from 'react-icons/fa';
+import { useHistory } from 'react-router-dom';
+
+const QUICK_ACTIONS = {
+  student: [
+    {
+      id: 'chats',
+      label: 'Către Chat',
+      description: 'Discută cu profesorii tăi',
+      icon: FaComments,
+      color: '#3B82F6',
+      bg: 'rgba(59, 130, 246, 0.08)',
+      route: '/chats',
+    },
+    {
+      id: 'quizzes',
+      label: 'Către Quiz-uri',
+      description: 'Rezolvă teste interactive',
+      icon: FaBookReader,
+      color: '#4F46E5',
+      bg: 'rgba(79, 70, 229, 0.08)',
+      route: '/solve-quizzes',
+    },
+    {
+      id: 'exams',
+      label: 'Vezi Examene',
+      description: 'Accesează subiecte PDF',
+      icon: FaFilePdf,
+      color: '#6366F1',
+      bg: 'rgba(99, 102, 241, 0.08)',
+      route: '/view-exams',
+    },
+  ],
+  teacher: [
+    {
+      id: 'chats',
+      label: 'Către Chat',
+      description: 'Comunică cu elevii tăi',
+      icon: FaComments,
+      color: '#3B82F6',
+      bg: 'rgba(59, 130, 246, 0.08)',
+      route: '/chats',
+    },
+    {
+      id: 'create-quiz',
+      label: 'Creează Quiz',
+      description: 'Adaugă teste noi',
+      icon: FaPencilAlt,
+      color: '#4F46E5',
+      bg: 'rgba(79, 70, 229, 0.08)',
+      route: '/quiz',
+    },
+    {
+      id: 'upload-exam',
+      label: 'Încarcă Examene',
+      description: 'Publică subiecte PDF',
+      icon: FaFileUpload,
+      color: '#6366F1',
+      bg: 'rgba(99, 102, 241, 0.08)',
+      route: '/upload-exam',
+    },
+    {
+      id: 'view-exams',
+      label: 'Vezi Examene',
+      description: 'Gestionează materialele',
+      icon: FaFilePdf,
+      color: '#818CF8',
+      bg: 'rgba(129, 140, 248, 0.08)',
+      route: '/view-exams',
+    },
+  ],
+};
+
+const STAT_CARDS = {
+  student: [
+    { label: 'Quiz-uri disponibile', value: '∞', hint: 'Explorează și exersează' },
+    { label: 'Pregătire EN', value: '100%', hint: 'Aliniat cu programa' },
+    { label: 'Suport live', value: '24/7', hint: 'Chat cu profesori' },
+  ],
+  teacher: [
+    { label: 'Elevi conectați', value: '∞', hint: 'Comunitate activă' },
+    { label: 'Quiz-uri create', value: '—', hint: 'Teste interactive' },
+    { label: 'Feedback instant', value: '✓', hint: 'Răspunsuri rapide' },
+  ],
+};
 
 const Home = () => {
-    const history = useHistory();
-    const user = JSON.parse(localStorage.getItem("userInfo"));
+  const history = useHistory();
+  const user = JSON.parse(localStorage.getItem('userInfo') || 'null');
 
-    const submitHandlerQuizPage = () => {
-      if (user && user.occupation === 'teacher') {
-          history.push("/quiz");
-      } else if (user && user.occupation === 'student') {
-          history.push("/solve-quizzes");
-      }
-    };
+  const isStudent = user?.occupation === 'student';
+  const isTeacher = user?.occupation === 'teacher';
+  const role = isStudent ? 'student' : 'teacher';
 
-    const submitHandlerChats = () => {
-        history.push("/chats")
-    }
-
-    const submitHandlerUploadExam = () => {
-        history.push("/upload-exam")
-    }
-
-    const submitHandlerViewExams = () => {
-        history.push("/view-exams")
-    }
-
-    const logoutHandler = () => {
-      localStorage.removeItem("userInfo");
-      history.push("/");
+  const navigateTo = (route) => {
+    history.push(route);
   };
 
+  if (!user) {
     return (
-      <Container maxW="xl" centerContent>
-        <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                bg="rgba(255, 255, 255, 0.8)"
-                w="100%"
-                p="10px"
-                borderBottom="1px solid rgba(226, 232, 240, 0.5)"
-                position="fixed"
-                top="0"
-                left="0"
-                right="0"
-                zIndex="1000"
-                boxShadow="md"
-                backdropFilter="blur(10px)"
-            >
-                <Box flex="0" d="flex" justifyContent="left">
-                  <Text 
-                  fontSize="md" 
-                  fontWeight="bold" 
-                  fontFamily="work sans"
-                  color="rgba(255, 182, 193, 0.9)"
-                   _hover={{ 
-                        bg: "rgba(255, 182, 193, 1)",
-                        transform: 'scale(1.05)',
-                    }}>
-                    Since 2025
-                  </Text>
-                </Box>
-                <Box flex="0" d="flex" justifyContent="center">
-                    <GradientText
-                        colors={["#FFB6C1", "#87CEEB", "#98FB98"]}
-                        animationSpeed={3}
-                        showBorder={false}
-                        className="custom-class">
-                        AskYourProf
-                    </GradientText>
-                </Box>
-                <MenuRoot closeOnSelect={false}>
-                    <MenuTrigger asChild>
-                        <Button size="lg"
-                            variant="ghost"
-                            _hover={{ bg: 'gray.300' }}
-                            _active={{ bg: 'gray.300' }}
-                            _focus={{ bg: 'gray.300' }}
-                            _expanded={{ bg: 'gray.300' }}>
-                            <Avatar.Root>
-                                <Avatar.Fallback name={user.name} />
-                                <Avatar.Image src={user.pic} />
-                            </Avatar.Root>
-                            <i className="fa-solid fa-chevron-down" style={{ color: 'black' }}></i>
-                        </Button>
-                    </MenuTrigger>
-                    <MenuContent bg="white">
-                        <MenuItem
-                            bg="white"
-                            color="black"
-                            _hover={{ background: 'gray.300' }}
-                        >
-                            <UserProfileModal user={user} />
-                            My Profile
-                        </MenuItem>
-                        <MenuSeparator color="grey" />
-                        <MenuItem
-                            bg="white"
-                            color="black"
-                            _hover={{ background: 'gray.300' }}
-                            onClick={logoutHandler}
-                        >Logout</MenuItem>
-                    </MenuContent>
-                </MenuRoot>
-            </Box>
-        <Box
-          d="flex"
-          justifyContent="center"
-          alignItems="center"
-          p={8}
-          bgGradient="linear(to-r, #FFB6C1, #87CEEB)"
-          w="100%"
-          maxW="600px"
-          m="40px 0"
-          borderRadius="2xl"
-          boxShadow="2xl"
-          textAlign="center"
-          transition="all 0.3s ease-in-out"
-          _hover={{ transform: 'scale(1.02)' }}
-          animation="fadeIn 0.5s ease-in-out"
-          sx={{
-            '@keyframes fadeIn': {
-              '0%': { opacity: 0, transform: 'translateY(20px)' },
-              '100%': { opacity: 1, transform: 'translateY(0)' }
-            }
-          }}
-          mt={20}
-        >
-          <VStack spacing={6}>
-            <Heading 
-              fontSize="4xl" 
-              fontWeight="bold" 
-              fontFamily="work sans"
-              color="white"
-              textShadow="2px 2px 4px rgba(0,0,0,0.2)"
-            >
-              AskYouProf – Pregătirea Inteligentă pentru Evaluarea Națională
-            </Heading>
-          </VStack>
-        </Box>
-        <Box 
-          d="flex" 
-          justifyContent="flex-start" 
-          alignItems="flex-start" 
-          w="90vw"
-          position="relative"
-          left="50%"
-          right="50%"
-          marginLeft="-30vw"
-          bg="white"
-          py={10}
-          px={8}
-          boxShadow="md"
-        >
-          <Box w="100%">
-            <Text 
-              fontSize="xl" 
-              fontWeight="bold" 
-              color="gray.700"
-              mb={6}
-              lineHeight="1.8"
-            >
-              AskYouProf este platforma care îi aduce pe elevi și profesori mai aproape ca niciodată pentru o pregătire eficientă, organizată și personalizată pentru Evaluarea Națională.
-            </Text>
-            
-            <VStack align="flex-start" spacing={4} mb={8}>
-              <Text 
-                fontSize="lg" 
-                color="gray.600"
-                lineHeight="1.8"
-              >
-                🔹 Elevii pot accesa rapid quiz-uri create de profesori experimentați, perfect aliniate cu programa școlară și structurate exact ca subiectele de examen.
-              </Text>
-              <Text 
-                fontSize="lg" 
-                color="gray.600"
-                lineHeight="1.8"
-              >
-                🔹 Profesorii creează și actualizează constant teste interactive, menite să stimuleze gândirea și să ofere o pregătire reală și relevantă.
-              </Text>
-            </VStack>
-
-            <Text 
-              fontSize="lg" 
-              color="gray.600"
-              mb={8}
-              lineHeight="1.8"
-              fontStyle="italic"
-            >
-              Ai nelămuriri? Cu un singur click intri în chat direct cu profesorul autor al quiz-ului și primești explicații clare, personalizate pe întrebările tale.
-            </Text>
-
-            <Box mb={8}>
-              <Text 
-                fontSize="xl"
-                fontWeight="bold"
-                color="pink.400"
-                mb={4}
-              >
-                AskYouProf înseamnă:
-              </Text>
-              <VStack align="flex-start" spacing={3}>
-                <Text 
-                  fontSize="lg" 
-                  color="gray.600"
-                  lineHeight="1.8"
-                >
-                  ✔️ Acces la teste de calitate, actualizate permanent
-                </Text>
-                <Text 
-                  fontSize="lg" 
-                  color="gray.600"
-                  lineHeight="1.8"
-                >
-                  ✔️ Suport individualizat de la profesori dedicați
-                </Text>
-                <Text 
-                  fontSize="lg" 
-                  color="gray.600"
-                  lineHeight="1.8"
-                >
-                  ✔️ Pregătire organizată, exact ca la examen
-                </Text>
-              </VStack>
-            </Box>
-
-            <Text 
-              fontSize="xl"
-              fontWeight="bold"
-              color="pink.400"
-              fontStyle="italic"
-              mb={8}
-              borderTop="1px solid"
-              borderBottom="1px solid"
-              borderColor="pink.100"
-              py={4}
-            >
-              Transformăm învățarea într-un proces clar, motivant și accesibil! Intră în AskYouProf și pregătește-te să reușești!
-            </Text>
-
-            <Flex 
-              direction={{ base: "column", md: "row" }} 
-              gap={6} 
-              justify="flex-start"
-              align="flex-start"
-              mt={4}
-            >
-              <Button
-                colorScheme="pink"
-                size="lg"
-                onClick={submitHandlerChats}
-                bg="rgba(255, 182, 193, 0.9)"
-                _hover={{ 
-                  bg: "rgba(255, 182, 193, 1)",
-                  transform: 'scale(1.05)',
-                }}
-                boxShadow="lg"
-                borderRadius="full"
-                leftIcon={<Icon as={FaComments} boxSize={5} />}
-                px={8}
-                transition="all 0.2s ease-in-out"
-                flex={{ base: "1", md: "0 1 auto" }}
-                minW={{ base: "full", md: "200px" }}
-              >
-                Vezi Chat-uri
-              </Button>
-
-              <Button
-                colorScheme="pink"
-                size="lg"
-                onClick={submitHandlerViewExams}
-                bg="rgba(255, 182, 193, 0.9)"
-                _hover={{ 
-                  bg: "rgba(255, 182, 193, 1)",
-                  transform: 'scale(1.05)',
-                }}
-                boxShadow="lg"
-                borderRadius="full"
-                leftIcon={<Icon as={FaFilePdf} boxSize={5} />}
-                px={8}
-                transition="all 0.2s ease-in-out"
-                flex={{ base: "1", md: "0 1 auto" }}
-                minW={{ base: "full", md: "200px" }}
-              >
-                Vezi Examene
-              </Button>
-
-              {user && user.occupation === 'teacher' && (
-                <>
-                  <Button
-                    colorScheme="pink"
-                    size="lg"
-                    onClick={submitHandlerQuizPage}
-                    bg="rgba(255, 182, 193, 0.9)"
-                    _hover={{ 
-                      bg: "rgba(255, 182, 193, 1)",
-                      transform: 'scale(1.05)',
-                    }}
-                    boxShadow="lg"
-                    borderRadius="full"
-                    leftIcon={<Icon as={FaPencilAlt} boxSize={5} />}
-                    px={8}
-                    transition="all 0.2s ease-in-out"
-                    flex={{ base: "1", md: "0 1 auto" }}
-                    minW={{ base: "full", md: "200px" }}
-                  >
-                    Creează Quiz
-                  </Button>
-                  
-                  <Button
-                    colorScheme="pink"
-                    size="lg"
-                    onClick={submitHandlerUploadExam}
-                    bg="rgba(255, 182, 193, 0.9)"
-                    _hover={{ 
-                      bg: "rgba(255, 182, 193, 1)",
-                      transform: 'scale(1.05)',
-                    }}
-                    boxShadow="lg"
-                    borderRadius="full"
-                    leftIcon={<Icon as={FaFileUpload} boxSize={5} />}
-                    px={8}
-                    transition="all 0.2s ease-in-out"
-                    flex={{ base: "1", md: "0 1 auto" }}
-                    minW={{ base: "full", md: "200px" }}
-                  >
-                    Încarcă Examene
-                  </Button>
-                </>
-              )}
-
-              {user && user.occupation === 'student' && (
-                <Button
-                  colorScheme="pink"
-                  size="lg"
-                  onClick={submitHandlerQuizPage}
-                  bg="rgba(255, 182, 193, 0.9)"
-                  _hover={{ 
-                    bg: "rgba(255, 182, 193, 1)",
-                    transform: 'scale(1.05)',
-                  }}
-                  boxShadow="lg"
-                  borderRadius="full"
-                  leftIcon={<Icon as={FaBookReader} boxSize={5} />}
-                  px={8}
-                  transition="all 0.2s ease-in-out"
-                  flex={{ base: "1", md: "0 1 auto" }}
-                  minW={{ base: "full", md: "200px" }}
-                >
-                  Rezolvă Quiz-uri!
-                </Button>
-              )}
-            </Flex>
-
-            {user && user.occupation === 'student' && (
-              <RecommendedForYou user={user} />
-            )}
-          </Box>
-        </Box>
-      </Container>
+      <Box minH="100vh" bg="gray.50" display="flex" alignItems="center" justifyContent="center">
+        <VStack gap={4}>
+          <Text color="gray.600">Sesiunea a expirat. Te rugăm să te autentifici din nou.</Text>
+          <Button colorPalette="blue" onClick={() => history.push('/')}>
+            Mergi la autentificare
+          </Button>
+        </VStack>
+      </Box>
     );
+  }
+
+  const quickActions = QUICK_ACTIONS[role] || QUICK_ACTIONS.student;
+  const statCards = STAT_CARDS[role] || STAT_CARDS.student;
+
+  return (
+    <Box minH="100vh" bg="gray.50">
+      <Container maxW="6xl" pt={6} pb={12} px={{ base: 4, md: 8 }}>
+        <VStack align="stretch" gap={8}>
+          {/* Welcome hero */}
+          <Card.Root
+            bg="white"
+            borderRadius="2xl"
+            border="1px solid"
+            borderColor="gray.200"
+            boxShadow="md"
+            overflow="hidden"
+          >
+            <Box
+              h="4px"
+              bgGradient="linear(to-r, indigo.500, blue.500, indigo.400)"
+            />
+            <Card.Body p={{ base: 6, md: 8 }}>
+              <Flex
+                direction={{ base: 'column', md: 'row' }}
+                justify="space-between"
+                align={{ base: 'flex-start', md: 'center' }}
+                gap={4}
+              >
+                <VStack align="flex-start" gap={2}>
+                  <HStack gap={3} flexWrap="wrap">
+                    <Heading
+                      size={{ base: 'xl', md: '2xl' }}
+                      fontFamily="work sans"
+                      color="gray.800"
+                    >
+                      Salut, {user.name}!
+                    </Heading>
+                    <Badge
+                      colorPalette={isStudent ? 'blue' : 'indigo'}
+                      variant="subtle"
+                      borderRadius="full"
+                      px={3}
+                      py={1}
+                      fontSize="sm"
+                    >
+                      {isStudent ? 'Elev' : 'Profesor'}
+                    </Badge>
+                  </HStack>
+                  <Text fontSize="md" color="gray.600" maxW="lg">
+                    {isStudent
+                      ? 'Bine ai venit în centrul tău de pregătire pentru Evaluarea Națională. Alege o acțiune rapidă sau explorează recomandările personalizate.'
+                      : 'Gestionează quiz-urile, examenele și comunicarea cu elevii — totul dintr-un singur loc.'}
+                  </Text>
+                </VStack>
+                <Box
+                  bg="indigo.50"
+                  borderRadius="xl"
+                  p={4}
+                  display={{ base: 'none', md: 'flex' }}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Icon as={FaRocket} color="indigo.500" boxSize={10} />
+                </Box>
+              </Flex>
+            </Card.Body>
+          </Card.Root>
+
+          {/* Quick stats */}
+          <SimpleGrid columns={{ base: 1, sm: 3 }} gap={4}>
+            {statCards.map((stat) => (
+              <Card.Root
+                key={stat.label}
+                bg="white"
+                borderRadius="xl"
+                border="1px solid"
+                borderColor="gray.200"
+                boxShadow="sm"
+                transition="all 0.2s"
+                _hover={{ boxShadow: 'md', borderColor: 'indigo.200' }}
+              >
+                <Card.Body p={5}>
+                  <VStack align="flex-start" gap={1}>
+                    <Text fontSize="xs" fontWeight="semibold" color="gray.500" textTransform="uppercase" letterSpacing="wider">
+                      {stat.label}
+                    </Text>
+                    <Text fontSize="2xl" fontWeight="bold" color="indigo.600">
+                      {stat.value}
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      {stat.hint}
+                    </Text>
+                  </VStack>
+                </Card.Body>
+              </Card.Root>
+            ))}
+          </SimpleGrid>
+
+          {/* Quick access */}
+          <Box>
+            <Heading size="md" color="gray.700" mb={4} fontFamily="work sans">
+              Acces rapid
+            </Heading>
+            <SimpleGrid columns={{ base: 1, sm: 2, lg: isTeacher ? 4 : 3 }} gap={4}>
+              {quickActions.map((action) => (
+                <Card.Root
+                  key={action.id}
+                  bg="white"
+                  borderRadius="xl"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  boxShadow="sm"
+                  cursor="pointer"
+                  transition="all 0.25s ease"
+                  _hover={{
+                    transform: 'translateY(-4px)',
+                    boxShadow: 'lg',
+                    borderColor: action.color,
+                  }}
+                  onClick={() => navigateTo(action.route)}
+                >
+                  <Card.Body p={5}>
+                    <HStack gap={4} align="flex-start">
+                      <Flex
+                        align="center"
+                        justify="center"
+                        w="48px"
+                        h="48px"
+                        borderRadius="xl"
+                        bg={action.bg}
+                        flexShrink={0}
+                      >
+                        <Icon as={action.icon} color={action.color} boxSize={5} />
+                      </Flex>
+                      <VStack align="flex-start" gap={1} flex={1}>
+                        <Text fontWeight="bold" color="gray.800" fontSize="md">
+                          {action.label}
+                        </Text>
+                        <Text fontSize="sm" color="gray.500" lineHeight="1.4">
+                          {action.description}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  </Card.Body>
+                </Card.Root>
+              ))}
+            </SimpleGrid>
+          </Box>
+
+          {/* Action buttons row */}
+          <Flex gap={3} flexWrap="wrap">
+            <Button
+              colorPalette="blue"
+              size="lg"
+              borderRadius="full"
+              leftIcon={<Icon as={FaComments} />}
+              onClick={() => navigateTo('/chats')}
+              boxShadow="md"
+              _hover={{ transform: 'scale(1.03)' }}
+              transition="all 0.2s"
+            >
+              Către Chat
+            </Button>
+            <Button
+              colorPalette="indigo"
+              size="lg"
+              borderRadius="full"
+              leftIcon={<Icon as={isStudent ? FaBookReader : FaPencilAlt} />}
+              onClick={() =>
+                navigateTo(isStudent ? '/solve-quizzes' : '/quiz')
+              }
+              boxShadow="md"
+              _hover={{ transform: 'scale(1.03)' }}
+              transition="all 0.2s"
+            >
+              {isStudent ? 'Către Quiz-uri' : 'Creează Quiz'}
+            </Button>
+          </Flex>
+
+          {/* Recommendations — students only */}
+          {isStudent && <RecommendedForYou user={user} />}
+        </VStack>
+      </Container>
+    </Box>
+  );
 };
 
 export default Home;

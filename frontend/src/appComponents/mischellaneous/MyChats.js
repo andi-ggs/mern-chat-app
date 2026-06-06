@@ -75,12 +75,14 @@ const MyChats = ({ fetchAgain }) => {
     <Box
       display={{ base: selectedChat ? 'none' : 'flex', md: 'flex' }}
       flexDir="column"
-      w={{ base: '100%', md: '340px' }}
-      minW={{ md: '340px' }}
+      w={{ base: '100%', md: '360px' }}
+      minW={{ md: '360px' }}
       h="100%"
       bg="white"
       borderRadius={{ base: 0, md: '2xl' }}
-      boxShadow={{ base: 'none', md: 'sm' }}
+      boxShadow={{ base: 'none', md: '0 4px 24px rgba(0, 0, 0, 0.06)' }}
+      borderWidth={{ base: 0, md: '1px' }}
+      borderColor="gray.100"
       overflow="hidden"
     >
       <Flex
@@ -91,32 +93,50 @@ const MyChats = ({ fetchAgain }) => {
         borderBottomWidth="1px"
         borderColor="gray.100"
         flexShrink={0}
+        bg="white"
       >
-        <HStack gap={2}>
-          <Icon as={HiOutlineChatBubbleLeftRight} boxSize={5} color="blue.500" />
-          <Text fontSize="lg" fontWeight="semibold" color="gray.800" letterSpacing="-0.01em">
-            Conversații
-          </Text>
+        <HStack gap={2.5}>
+          <Flex
+            w="36px"
+            h="36px"
+            borderRadius="xl"
+            bg="blue.50"
+            align="center"
+            justify="center"
+          >
+            <Icon as={HiOutlineChatBubbleLeftRight} boxSize={5} color="blue.500" />
+          </Flex>
+          <Box>
+            <Text fontSize="md" fontWeight="bold" color="gray.800" letterSpacing="-0.02em">
+              Conversații
+            </Text>
+            <Text fontSize="xs" color="gray.400">
+              {chatState?.length ? `${chatState.length} active` : 'Nicio conversație'}
+            </Text>
+          </Box>
         </HStack>
         <GroupChatModal>
           <Button
             size="sm"
-            variant="ghost"
             colorPalette="blue"
-            borderRadius="full"
-            fontWeight="medium"
-            gap={1}
+            borderRadius="xl"
+            fontWeight="semibold"
+            gap={1.5}
+            px={3}
+            bg="blue.50"
+            color="blue.600"
+            _hover={{ bg: 'blue.100' }}
           >
-            <FaPlus size={12} />
+            <FaPlus size={11} />
             Grup nou
           </Button>
         </GroupChatModal>
       </Flex>
 
-      <Box flex={1} overflowY="auto" px={2} py={2}>
+      <Box flex={1} overflowY="auto" px={3} py={3}>
         {chatState ? (
           chatState.length > 0 ? (
-            <VStack gap={1} align="stretch" w="100%">
+            <VStack gap={1.5} align="stretch" w="100%">
               {chatState.map((chat) => {
                 const isSelected = selectedChat?._id === chat._id
                 const unreadCount = getUnreadCount(chat._id)
@@ -134,10 +154,13 @@ const MyChats = ({ fetchAgain }) => {
                     py={3}
                     borderRadius="xl"
                     bg={isSelected ? 'blue.50' : 'transparent'}
-                    borderLeftWidth={isSelected ? '3px' : '3px'}
-                    borderLeftColor={isSelected ? 'blue.500' : 'transparent'}
-                    _hover={{ bg: isSelected ? 'blue.50' : 'gray.50' }}
-                    transition="all 0.15s ease"
+                    borderWidth="1px"
+                    borderColor={isSelected ? 'blue.100' : 'transparent'}
+                    _hover={{
+                      bg: isSelected ? 'blue.50' : 'gray.50',
+                      borderColor: isSelected ? 'blue.100' : 'gray.100',
+                    }}
+                    transition="all 0.18s ease"
                   >
                     <Box position="relative" flexShrink={0}>
                       {chat.isGroupChat ? (
@@ -145,11 +168,13 @@ const MyChats = ({ fetchAgain }) => {
                           w="48px"
                           h="48px"
                           borderRadius="full"
-                          bg="purple.100"
+                          bg="purple.50"
+                          borderWidth="2px"
+                          borderColor="purple.100"
                           align="center"
                           justify="center"
                         >
-                          <Icon as={FaUsers} color="purple.500" boxSize={5} />
+                          <Icon as={FaUsers} color="purple.500" boxSize={4} />
                         </Flex>
                       ) : (
                         <Avatar.Root size="md">
@@ -176,13 +201,19 @@ const MyChats = ({ fetchAgain }) => {
                         <Text
                           fontWeight={unreadCount > 0 ? 'bold' : 'semibold'}
                           fontSize="sm"
-                          color="gray.800"
+                          color={isSelected ? 'blue.700' : 'gray.800'}
                           truncate
                         >
                           {chatName}
                         </Text>
                         {chat.latestMessage?.createdAt && (
-                          <Text fontSize="xs" color="gray.400" flexShrink={0} ml={2}>
+                          <Text
+                            fontSize="xs"
+                            color={unreadCount > 0 ? 'blue.500' : 'gray.400'}
+                            fontWeight={unreadCount > 0 ? 'semibold' : 'normal'}
+                            flexShrink={0}
+                            ml={2}
+                          >
                             {formatChatTime(chat.latestMessage.createdAt)}
                           </Text>
                         )}
@@ -213,6 +244,7 @@ const MyChats = ({ fetchAgain }) => {
                         alignItems="center"
                         justifyContent="center"
                         fontSize="xs"
+                        fontWeight="bold"
                         flexShrink={0}
                       >
                         {unreadCount}
@@ -229,11 +261,25 @@ const MyChats = ({ fetchAgain }) => {
               justify="center"
               h="100%"
               color="gray.400"
-              gap={2}
-              py={10}
+              gap={3}
+              py={12}
             >
-              <Icon as={HiOutlineChatBubbleLeftRight} boxSize={10} opacity={0.4} />
-              <Text fontSize="sm">Nicio conversație</Text>
+              <Flex
+                w="64px"
+                h="64px"
+                borderRadius="2xl"
+                bg="gray.50"
+                align="center"
+                justify="center"
+              >
+                <Icon as={HiOutlineChatBubbleLeftRight} boxSize={8} opacity={0.35} />
+              </Flex>
+              <Text fontSize="sm" fontWeight="medium" color="gray.500">
+                Nicio conversație
+              </Text>
+              <Text fontSize="xs" color="gray.400" textAlign="center" px={6}>
+                Creează un grup nou sau caută un utilizator pentru a începe
+              </Text>
             </Flex>
           )
         ) : (
@@ -262,7 +308,8 @@ const MyChats = ({ fetchAgain }) => {
           p={3}
           mx={3}
           mb={3}
-          borderRadius="lg"
+          borderRadius="xl"
+          fontSize="sm"
         >
           {message}
         </Flex>

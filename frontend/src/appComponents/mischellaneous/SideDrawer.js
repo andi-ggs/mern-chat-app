@@ -8,6 +8,8 @@ import {
   HStack,
   Icon,
   VStack,
+  Avatar,
+  Spinner,
 } from '@chakra-ui/react';
 import {
   MenuContent,
@@ -15,7 +17,7 @@ import {
   MenuRoot,
   MenuTrigger,
   MenuSeparator,
-} from "../../components/ui/menu";
+} from '../../components/ui/menu';
 import {
   DrawerBackdrop,
   DrawerBody,
@@ -26,21 +28,18 @@ import {
   DrawerRoot,
   DrawerTitle,
   DrawerTrigger,
-} from "../../components/ui/drawer";
+} from '../../components/ui/drawer';
 import axios from 'axios';
 import UserListItem from '../userAvatar/UserListItem';
 import ChatLoading from '../ChatLoading';
-import { Tooltip } from "../../components/ui/tooltip";
+import { Tooltip } from '../../components/ui/tooltip';
 import React, { useState } from 'react';
-import { Avatar } from '@chakra-ui/react';
 import { ChatState } from '../../context/chatProvider';
 import UserProfileModal from './UserProfileModal';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Spinner } from "@chakra-ui/react";
 import { getSender } from '../../config/ChatLogic';
 import NotificationBadge from 'react-notification-badge';
 import { Effect } from 'react-notification-badge';
-import GradientText from '../../animations/gradientText';
 import {
   FaSearch,
   FaBell,
@@ -49,7 +48,11 @@ import {
   FaBookReader,
   FaPencilAlt,
   FaFilePdf,
-} from "react-icons/fa";
+  FaGraduationCap,
+  FaBars,
+} from 'react-icons/fa';
+
+export const NAVBAR_HEIGHT = 72;
 
 const NavLink = ({ icon, label, path, isActive, onNavigate }) => (
   <Tooltip content={label} placement="bottom">
@@ -57,60 +60,72 @@ const NavLink = ({ icon, label, path, isActive, onNavigate }) => (
       variant="ghost"
       size="sm"
       display="flex"
-      flexDirection="column"
+      flexDirection="row"
       alignItems="center"
-      gap={0.5}
-      px={3}
+      gap={2}
+      px={4}
       py={2}
       h="auto"
-      minW="56px"
       borderRadius="xl"
-      color={isActive ? 'purple.600' : 'gray.600'}
-      bg={isActive ? 'purple.50' : 'transparent'}
+      fontFamily="Inter, sans-serif"
+      fontSize="sm"
+      fontWeight={isActive ? 'semibold' : 'medium'}
+      color={isActive ? 'indigo.600' : 'gray.600'}
+      bg={isActive ? 'rgba(99, 102, 241, 0.1)' : 'transparent'}
+      border="1px solid"
+      borderColor={isActive ? 'rgba(99, 102, 241, 0.25)' : 'transparent'}
       _hover={{
-        bg: isActive ? 'purple.100' : 'whiteAlpha.600',
+        bg: isActive ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255, 255, 255, 0.7)',
         transform: 'translateY(-1px)',
+        borderColor: isActive ? 'rgba(99, 102, 241, 0.35)' : 'rgba(255, 255, 255, 0.5)',
       }}
-      transition="all 0.2s"
+      transition="all 0.2s ease"
       onClick={() => onNavigate(path)}
     >
       <Icon as={icon} boxSize={4} />
-      <Text fontSize="2xs" fontWeight={isActive ? 'semibold' : 'medium'} display={{ base: 'none', md: 'block' }}>
-        {label}
-      </Text>
+      <Text display={{ base: 'none', lg: 'inline' }}>{label}</Text>
     </Button>
   </Tooltip>
 );
 
 const SideDrawer = () => {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
-  const { setSelectedChat, chatState, setChatState, notification, setNotification } = ChatState();
+  const { setSelectedChat, chatState, setChatState, notification, setNotification } =
+    ChatState();
   const history = useHistory();
   const location = useLocation();
-  const { isOpen, onClose } = useDisclosure();
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-  const user = JSON.parse(localStorage.getItem("userInfo"));
+  const { isOpen, onClose, onOpen } = useDisclosure();
+  const searchDrawer = useDisclosure();
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
+  const user = JSON.parse(localStorage.getItem('userInfo'));
 
   const isActive = (path) => location.pathname === path;
 
   const quizPath = user?.occupation === 'teacher' ? '/quiz' : '/solve-quizzes';
-  const quizLabel = user?.occupation === 'teacher' ? 'Quiz-uri' : 'Quiz-uri';
+  const quizLabel = user?.occupation === 'teacher' ? 'Creează Quiz' : 'Quiz-uri';
   const QuizIcon = user?.occupation === 'teacher' ? FaPencilAlt : FaBookReader;
 
+  const navItems = [
+    { icon: FaHome, label: 'Acasă', path: '/home' },
+    { icon: FaComments, label: 'Chat', path: '/chats' },
+    { icon: QuizIcon, label: quizLabel, path: quizPath },
+    { icon: FaFilePdf, label: 'Examene', path: '/view-exams' },
+  ];
+
   const logoutHandler = () => {
-    localStorage.removeItem("userInfo");
-    history.push("/");
+    localStorage.removeItem('userInfo');
+    history.push('/');
   };
 
   const handleSearch = async () => {
     if (!search) {
-      setMessage("Te rugăm să introduci un nume în bara de căutare");
-      setMessageType("warning");
-      setTimeout(() => setMessage(""), 5000);
+      setMessage('Te rugăm să introduci un nume în bara de căutare');
+      setMessageType('warning');
+      setTimeout(() => setMessage(''), 5000);
       return;
     }
 
@@ -125,9 +140,9 @@ const SideDrawer = () => {
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
-      setMessage("A apărut o eroare! Nu am putut încărca rezultatele.");
-      setMessageType("error");
-      setTimeout(() => setMessage(""), 5000);
+      setMessage('A apărut o eroare! Nu am putut încărca rezultatele.');
+      setMessageType('error');
+      setTimeout(() => setMessage(''), 5000);
       setLoading(false);
     }
   };
@@ -137,7 +152,7 @@ const SideDrawer = () => {
       setLoadingChat(true);
       const config = {
         headers: {
-          "Content-type": "application/json",
+          'Content-type': 'application/json',
           Authorization: `Bearer ${user.token}`,
         },
       };
@@ -148,62 +163,148 @@ const SideDrawer = () => {
       }
       setSelectedChat(data);
       setLoadingChat(false);
-      onClose();
+      searchDrawer.onClose();
     } catch (error) {
       console.log(error);
-      setMessage("A apărut o eroare!");
-      setMessageType("error");
-      setTimeout(() => setMessage(""), 5000);
+      setMessage('A apărut o eroare!');
+      setMessageType('error');
+      setTimeout(() => setMessage(''), 5000);
     }
+  };
+
+  const navigateTo = (path) => {
+    history.push(path);
+    onClose();
   };
 
   return (
     <Box
+      as="header"
       position="fixed"
       top={0}
       left={0}
       right={0}
       zIndex={1000}
+      h={`${NAVBAR_HEIGHT}px`}
       px={{ base: 3, md: 6 }}
       py={2}
     >
       <Flex
         justify="space-between"
         align="center"
-        bg="rgba(255, 255, 255, 0.75)"
-        backdropFilter="blur(16px)"
+        h="100%"
+        bg="rgba(255, 255, 255, 0.72)"
+        backdropFilter="blur(20px) saturate(180%)"
+        WebkitBackdropFilter="blur(20px) saturate(180%)"
         border="1px solid"
-        borderColor="whiteAlpha.600"
+        borderColor="rgba(255, 255, 255, 0.6)"
         borderRadius="2xl"
-        boxShadow="0 4px 24px rgba(0, 0, 0, 0.06)"
+        boxShadow="0 8px 32px rgba(99, 102, 241, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)"
         px={{ base: 3, md: 5 }}
         py={2}
         w="100%"
       >
         {/* Logo */}
-        <Box flex="0 0 auto" minW="120px">
-          <GradientText
-            colors={["#667eea", "#764ba2", "#f093fb"]}
-            animationSpeed={4}
-            showBorder={false}
-            className="custom-class"
+        <HStack
+          flex="0 0 auto"
+          spacing={2}
+          cursor="pointer"
+          onClick={() => history.push('/home')}
+          _hover={{ opacity: 0.85 }}
+          transition="opacity 0.2s"
+        >
+          <Flex
+            align="center"
+            justify="center"
+            w={9}
+            h={9}
+            borderRadius="xl"
+            bgGradient="linear(to-br, indigo.500, purple.500)"
+            boxShadow="0 4px 12px rgba(99, 102, 241, 0.35)"
           >
-            AskYourProf
-          </GradientText>
-        </Box>
+            <Icon as={FaGraduationCap} color="white" boxSize={4} />
+          </Flex>
+          <VStack align="flex-start" spacing={0} display={{ base: 'none', sm: 'flex' }}>
+            <Text
+              fontFamily="Nunito, sans-serif"
+              fontSize="lg"
+              fontWeight="800"
+              lineHeight="1.1"
+              bgGradient="linear(to-r, indigo.600, purple.500)"
+              bgClip="text"
+            >
+              AskYourProf
+            </Text>
+            <Text fontSize="2xs" color="gray.500" fontFamily="Inter, sans-serif" fontWeight="medium">
+              Platformă educațională
+            </Text>
+          </VStack>
+        </HStack>
 
-        {/* Navigare centrală */}
-        <HStack spacing={1} flex={1} justify="center" display={{ base: 'none', sm: 'flex' }}>
-          <NavLink icon={FaHome} label="Acasă" path="/home" isActive={isActive('/home')} onNavigate={history.push} />
-          <NavLink icon={FaComments} label="Chat" path="/chats" isActive={isActive('/chats')} onNavigate={history.push} />
-          <NavLink icon={QuizIcon} label={quizLabel} path={quizPath} isActive={isActive(quizPath)} onNavigate={history.push} />
-          <NavLink icon={FaFilePdf} label="Examene" path="/view-exams" isActive={isActive('/view-exams')} onNavigate={history.push} />
+        {/* Navigare centrală — desktop */}
+        <HStack spacing={1} flex={1} justify="center" display={{ base: 'none', md: 'flex' }}>
+          {navItems.map(({ icon, label, path }) => (
+            <NavLink
+              key={path}
+              icon={icon}
+              label={label}
+              path={path}
+              isActive={isActive(path)}
+              onNavigate={history.push}
+            />
+          ))}
         </HStack>
 
         {/* Acțiuni dreapta */}
         <HStack spacing={1} flex="0 0 auto">
+          {/* Meniu mobil */}
+          <DrawerRoot placement="bottom" onClose={onClose} isOpen={isOpen}>
+            <DrawerBackdrop />
+            <DrawerTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                borderRadius="xl"
+                color="gray.600"
+                display={{ base: 'flex', md: 'none' }}
+                _hover={{ bg: 'indigo.50', color: 'indigo.600' }}
+                onClick={onOpen}
+              >
+                <FaBars size="14px" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent bg="white" borderTopRadius="2xl">
+              <DrawerHeader borderBottomWidth="1px" borderColor="gray.100">
+                <DrawerTitle fontFamily="Nunito, sans-serif" color="gray.800">
+                  Navigare
+                </DrawerTitle>
+              </DrawerHeader>
+              <DrawerBody py={4}>
+                <VStack align="stretch" spacing={2}>
+                  {navItems.map(({ icon, label, path }) => (
+                    <Button
+                      key={path}
+                      variant="ghost"
+                      justifyContent="flex-start"
+                      leftIcon={<Icon as={icon} />}
+                      borderRadius="xl"
+                      fontFamily="Inter, sans-serif"
+                      color={isActive(path) ? 'indigo.600' : 'gray.700'}
+                      bg={isActive(path) ? 'indigo.50' : 'transparent'}
+                      _hover={{ bg: 'indigo.50' }}
+                      onClick={() => navigateTo(path)}
+                    >
+                      {label}
+                    </Button>
+                  ))}
+                </VStack>
+              </DrawerBody>
+              <DrawerCloseTrigger />
+            </DrawerContent>
+          </DrawerRoot>
+
           {/* Căutare utilizatori */}
-          <DrawerRoot placement="left" onClose={onClose} isOpen={isOpen}>
+          <DrawerRoot placement="left" onClose={searchDrawer.onClose} isOpen={searchDrawer.isOpen}>
             <DrawerBackdrop />
             <DrawerTrigger asChild>
               <Tooltip content="Caută utilizatori" placement="bottom">
@@ -212,10 +313,11 @@ const SideDrawer = () => {
                   size="sm"
                   borderRadius="xl"
                   color="gray.600"
-                  _hover={{ bg: 'purple.50', color: 'purple.600' }}
+                  _hover={{ bg: 'indigo.50', color: 'indigo.600' }}
+                  onClick={searchDrawer.onOpen}
                 >
                   <FaSearch size="14px" />
-                  <Text display={{ base: 'none', lg: 'inline' }} ml={2} fontSize="sm">
+                  <Text display={{ base: 'none', lg: 'inline' }} ml={2} fontSize="sm" fontFamily="Inter, sans-serif">
                     Caută
                   </Text>
                 </Button>
@@ -223,7 +325,7 @@ const SideDrawer = () => {
             </DrawerTrigger>
             <DrawerContent bg="white">
               <DrawerHeader borderBottomWidth="1px" borderColor="gray.100">
-                <DrawerTitle color="gray.800" fontWeight="semibold">
+                <DrawerTitle color="gray.800" fontWeight="semibold" fontFamily="Nunito, sans-serif">
                   Caută utilizatori
                 </DrawerTitle>
               </DrawerHeader>
@@ -232,20 +334,25 @@ const SideDrawer = () => {
                   <Input
                     placeholder="Caută după nume sau email"
                     color="gray.800"
+                    fontFamily="Inter, sans-serif"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     borderRadius="lg"
                     flex={1}
                     borderColor="gray.200"
-                    _focus={{ borderColor: 'purple.500', boxShadow: '0 0 0 1px var(--chakra-colors-purple-500)' }}
+                    _focus={{
+                      borderColor: 'indigo.500',
+                      boxShadow: '0 0 0 1px var(--chakra-colors-indigo-500)',
+                    }}
                   />
                   <Button
                     onClick={handleSearch}
-                    bgGradient="linear(to-r, #667eea, #764ba2)"
+                    bgGradient="linear(to-r, indigo.500, purple.500)"
                     color="white"
                     borderRadius="lg"
                     px={5}
+                    fontFamily="Inter, sans-serif"
                     _hover={{ opacity: 0.9 }}
                   >
                     Caută
@@ -273,23 +380,24 @@ const SideDrawer = () => {
                     justifyContent="center"
                     alignItems="center"
                     bg={
-                      messageType === "warning"
-                        ? "yellow.50"
-                        : messageType === "success"
-                          ? "green.50"
-                          : "red.50"
+                      messageType === 'warning'
+                        ? 'yellow.50'
+                        : messageType === 'success'
+                          ? 'green.50'
+                          : 'red.50'
                     }
                     color={
-                      messageType === "warning"
-                        ? "yellow.700"
-                        : messageType === "success"
-                          ? "green.700"
-                          : "red.700"
+                      messageType === 'warning'
+                        ? 'yellow.700'
+                        : messageType === 'success'
+                          ? 'green.700'
+                          : 'red.700'
                     }
                     p={3}
                     borderRadius="lg"
                     width="100%"
                     fontSize="sm"
+                    fontFamily="Inter, sans-serif"
                   >
                     {message}
                   </Flex>
@@ -308,7 +416,7 @@ const SideDrawer = () => {
                 borderRadius="xl"
                 color="gray.600"
                 position="relative"
-                _hover={{ bg: 'purple.50', color: 'purple.600' }}
+                _hover={{ bg: 'indigo.50', color: 'indigo.600' }}
               >
                 <NotificationBadge count={notification.length} effect={Effect.SCALE} />
                 <FaBell size="14px" />
@@ -316,7 +424,7 @@ const SideDrawer = () => {
             </MenuTrigger>
             <MenuContent borderRadius="xl" boxShadow="lg" p={2}>
               {!notification.length && (
-                <Text px={3} py={2} fontSize="sm" color="gray.500">
+                <Text px={3} py={2} fontSize="sm" color="gray.500" fontFamily="Inter, sans-serif">
                   Niciun mesaj nou
                 </Text>
               )}
@@ -325,6 +433,7 @@ const SideDrawer = () => {
                   key={notif._id}
                   borderRadius="lg"
                   fontSize="sm"
+                  fontFamily="Inter, sans-serif"
                   onClick={() => {
                     setSelectedChat(notif.chat);
                     setNotification(notification.filter((n) => n !== notif));
@@ -346,7 +455,7 @@ const SideDrawer = () => {
                 size="sm"
                 borderRadius="xl"
                 px={2}
-                _hover={{ bg: 'purple.50' }}
+                _hover={{ bg: 'indigo.50' }}
               >
                 <Avatar.Root size="sm">
                   <Avatar.Fallback name={user.name} />
@@ -356,10 +465,14 @@ const SideDrawer = () => {
             </MenuTrigger>
             <MenuContent borderRadius="xl" boxShadow="lg" p={2}>
               <Box px={3} py={2} borderBottom="1px solid" borderColor="gray.100" mb={1}>
-                <Text fontWeight="semibold" fontSize="sm" color="gray.800">{user.name}</Text>
-                <Text fontSize="xs" color="gray.500">{user.email}</Text>
+                <Text fontWeight="semibold" fontSize="sm" color="gray.800" fontFamily="Nunito, sans-serif">
+                  {user.name}
+                </Text>
+                <Text fontSize="xs" color="gray.500" fontFamily="Inter, sans-serif">
+                  {user.email}
+                </Text>
               </Box>
-              <MenuItem borderRadius="lg" fontSize="sm">
+              <MenuItem borderRadius="lg" fontSize="sm" fontFamily="Inter, sans-serif">
                 <UserProfileModal user={user} />
                 Profilul meu
               </MenuItem>
@@ -367,6 +480,7 @@ const SideDrawer = () => {
               <MenuItem
                 borderRadius="lg"
                 fontSize="sm"
+                fontFamily="Inter, sans-serif"
                 color="red.500"
                 _hover={{ bg: 'red.50' }}
                 onClick={logoutHandler}

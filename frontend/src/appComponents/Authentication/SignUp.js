@@ -7,6 +7,7 @@ import {
   Icon,
   Spinner,
   Flex,
+  Box,
   createListCollection,
 } from '@chakra-ui/react';
 import { Field } from "../../components/ui/field";
@@ -21,7 +22,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "../../components/ui/select";
-import { FaUser, FaEnvelope, FaImage } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaImage, FaCloudUploadAlt } from 'react-icons/fa';
 import axios from 'axios';
 import { useHistory } from "react-router";
 
@@ -31,6 +32,58 @@ const occupation = createListCollection({
     { label: "Elev", value: "student" },
   ],
 });
+
+const formStackSx = {
+  '& label': {
+    fontFamily: 'Inter, sans-serif',
+    fontWeight: 'semibold',
+    fontSize: 'sm',
+    color: 'var(--chakra-colors-gray-700)',
+    marginBottom: '6px',
+  },
+};
+
+const inputStyles = {
+  size: "lg",
+  h: '52px',
+  borderRadius: "xl",
+  border: '1.5px solid',
+  borderColor: "gray.200",
+  bg: 'gray.50',
+  fontFamily: 'Inter, sans-serif',
+  fontSize: 'md',
+  boxShadow: 'sm',
+  transition: 'all 0.2s',
+  _hover: {
+    borderColor: 'blue.300',
+    bg: 'white',
+    boxShadow: 'md',
+  },
+  _focus: {
+    borderColor: 'blue.500',
+    bg: 'white',
+    boxShadow: '0 0 0 3px rgba(37, 99, 235, 0.15)',
+  },
+  _placeholder: {
+    color: 'gray.400',
+  },
+};
+
+const selectTriggerStyles = {
+  h: '52px',
+  borderRadius: 'xl',
+  border: '1.5px solid',
+  borderColor: 'gray.200',
+  bg: 'gray.50',
+  fontFamily: 'Inter, sans-serif',
+  boxShadow: 'sm',
+  transition: 'all 0.2s',
+  _hover: {
+    borderColor: 'blue.300',
+    bg: 'white',
+    boxShadow: 'md',
+  },
+};
 
 const SignUp = ({ onSwitchToLogin }) => {
   const [name, setName] = useState('');
@@ -160,31 +213,35 @@ const SignUp = ({ onSwitchToLogin }) => {
     }
   };
 
-  const inputStyles = {
-    size: "lg",
-    borderRadius: "lg",
-    borderColor: "gray.200",
-    _hover: { borderColor: 'purple.300' },
-    _focus: { borderColor: 'purple.500', boxShadow: '0 0 0 1px var(--chakra-colors-purple-500)' },
-  };
-
   return (
-    <Stack spacing={4} w="100%" maxH="60vh" overflowY="auto" pr={1}
+    <Stack
+      spacing={5}
+      w="100%"
+      maxH="62vh"
+      overflowY="auto"
+      pr={2}
       sx={{
-        '&::-webkit-scrollbar': { width: '4px' },
-        '&::-webkit-scrollbar-thumb': { background: '#e2e8f0', borderRadius: '4px' },
+        ...formStackSx,
+        '&::-webkit-scrollbar': { width: '6px' },
+        '&::-webkit-scrollbar-track': { background: 'transparent' },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#cbd5e1',
+          borderRadius: '8px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': { background: '#94a3b8' },
       }}
     >
       {message && (
         <Alert
           status={messageType === "success" ? "success" : "error"}
           title={message}
-          borderRadius="lg"
+          borderRadius="xl"
+          boxShadow="sm"
         />
       )}
 
       <Field label="Nume" errorText={nameError} invalid={!!nameError}>
-        <InputGroup startElement={<Icon as={FaUser} color="gray.400" boxSize={4} />}>
+        <InputGroup startElement={<Icon as={FaUser} color="blue.400" boxSize={4} />}>
           <Input
             name="name"
             placeholder="Introdu numele complet"
@@ -197,7 +254,7 @@ const SignUp = ({ onSwitchToLogin }) => {
       </Field>
 
       <Field label="Adresa de email" errorText={emailError} invalid={!!emailError}>
-        <InputGroup startElement={<Icon as={FaEnvelope} color="gray.400" boxSize={4} />}>
+        <InputGroup startElement={<Icon as={FaEnvelope} color="blue.400" boxSize={4} />}>
           <Input
             name="email"
             type="email"
@@ -235,21 +292,44 @@ const SignUp = ({ onSwitchToLogin }) => {
       <Field label="Fotografie de profil">
         <Flex
           align="center"
-          gap={3}
-          p={3}
+          gap={4}
+          px={5}
+          py={4}
+          minH="52px"
           border="2px dashed"
-          borderColor="gray.200"
-          borderRadius="lg"
-          _hover={{ borderColor: 'purple.300', bg: 'purple.50' }}
-          transition="all 0.2s"
+          borderColor={pic ? 'teal.300' : 'gray.200'}
+          borderRadius="xl"
+          bg={pic ? 'teal.50' : 'gray.50'}
+          boxShadow="sm"
+          _hover={{
+            borderColor: 'blue.400',
+            bg: pic ? 'teal.50' : 'blue.50',
+            boxShadow: 'md',
+          }}
+          transition="all 0.25s"
           cursor="pointer"
           position="relative"
         >
-          <Icon as={FaImage} color="purple.400" boxSize={5} />
-          <Text fontSize="sm" color="gray.500" flex={1}>
-            {pic ? 'Imagine încărcată ✓' : 'Alege o imagine (JPEG/PNG)'}
-          </Text>
-          {picLoading && <Spinner size="sm" color="purple.500" />}
+          <Flex
+            w="40px"
+            h="40px"
+            minW="40px"
+            borderRadius="lg"
+            bg={pic ? 'teal.100' : 'blue.100'}
+            align="center"
+            justify="center"
+          >
+            <Icon as={pic ? FaImage : FaCloudUploadAlt} color={pic ? 'teal.500' : 'blue.500'} boxSize={4} />
+          </Flex>
+          <Box flex={1}>
+            <Text fontSize="sm" fontWeight="semibold" color={pic ? 'teal.700' : 'gray.700'} fontFamily="Inter, sans-serif">
+              {pic ? 'Imagine încărcată cu succes' : 'Alege o imagine de profil'}
+            </Text>
+            <Text fontSize="xs" color="gray.500" fontFamily="Inter, sans-serif">
+              Formate acceptate: JPEG, PNG
+            </Text>
+          </Box>
+          {picLoading && <Spinner size="sm" color="blue.500" />}
           <Input
             type="file"
             accept="image/*"
@@ -273,11 +353,13 @@ const SignUp = ({ onSwitchToLogin }) => {
             setTouched((t) => ({ ...t, role: true }));
           }}
         >
-          <SelectLabel fontWeight="medium" mb={1}>Eu sunt...</SelectLabel>
-          <SelectTrigger borderRadius="lg" borderColor="gray.200" _hover={{ borderColor: 'purple.300' }}>
+          <SelectLabel fontWeight="semibold" mb={1.5} fontFamily="Inter, sans-serif" fontSize="sm" color="gray.700">
+            Eu sunt...
+          </SelectLabel>
+          <SelectTrigger {...selectTriggerStyles}>
             <SelectValueText placeholder="Profesor / Elev" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent borderRadius="xl" boxShadow="lg">
             {occupation.items.map((roles) => (
               <SelectItem item={roles} key={roles.value} value={roles.value}>
                 {roles.label}
@@ -287,36 +369,43 @@ const SignUp = ({ onSwitchToLogin }) => {
         </SelectRoot>
       </Field>
 
-      <Button
-        size="lg"
-        w="100%"
-        mt={2}
-        borderRadius="xl"
-        bgGradient="linear(to-r, #667eea, #764ba2)"
-        color="white"
-        fontWeight="semibold"
-        _hover={{
-          bgGradient: "linear(to-r, #5a6fd6, #6a4190)",
-          transform: 'translateY(-1px)',
-          boxShadow: 'lg',
-        }}
-        _active={{ transform: 'translateY(0)' }}
-        transition="all 0.2s"
-        onClick={submitHandler}
-        disabled={picLoading || loading}
-      >
-        {picLoading || loading ? <Spinner size="sm" color="white" /> : 'Creează cont'}
-      </Button>
+      <Box pt={1}>
+        <Button
+          size="lg"
+          w="100%"
+          h="54px"
+          borderRadius="xl"
+          bgGradient="linear(to-r, #2563eb, #0d9488)"
+          color="white"
+          fontWeight="bold"
+          fontSize="md"
+          fontFamily="Inter, sans-serif"
+          letterSpacing="0.01em"
+          boxShadow="md"
+          _hover={{
+            bgGradient: "linear(to-r, #1d4ed8, #0f766e)",
+            transform: 'translateY(-2px)',
+            boxShadow: 'lg',
+          }}
+          _active={{ transform: 'translateY(0)', boxShadow: 'md' }}
+          transition="all 0.25s ease"
+          onClick={submitHandler}
+          disabled={picLoading || loading}
+        >
+          {picLoading || loading ? <Spinner size="sm" color="white" /> : 'Creează cont'}
+        </Button>
+      </Box>
 
       {onSwitchToLogin && (
-        <Text textAlign="center" fontSize="sm" color="gray.500">
+        <Text textAlign="center" fontSize="sm" color="gray.500" fontFamily="Inter, sans-serif" pb={2}>
           Ai deja cont?{' '}
           <Text
             as="span"
-            color="purple.600"
-            fontWeight="semibold"
+            color="blue.600"
+            fontWeight="bold"
             cursor="pointer"
-            _hover={{ textDecoration: 'underline' }}
+            transition="color 0.2s"
+            _hover={{ color: 'teal.600', textDecoration: 'underline' }}
             onClick={onSwitchToLogin}
           >
             Autentifică-te
