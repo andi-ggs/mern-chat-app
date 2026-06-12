@@ -16,7 +16,7 @@ import {
     Container,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
     FaClock,
     FaCheckCircle,
@@ -712,6 +712,7 @@ const SolveQuizzes = () => {
     const history = useHistory();
     const user = JSON.parse(localStorage.getItem('userInfo'));
 
+    const location = useLocation();
     const [sessionKey, setSessionKey] = useState(0);
     const deadline = useMemo(
         () => new Date(Date.now() + 60 * 60 * 1000),
@@ -731,6 +732,22 @@ const SolveQuizzes = () => {
                 };
                 const response = await axios.get('/api/quiz', config);
                 setQuizzes(response.data);
+
+                // Auto-start a quiz when navigated from a recommendation card
+                const preselectedId = location.state?.quizId;
+                const isMongoId = preselectedId && /^[a-f\d]{24}$/i.test(preselectedId);
+                if (isMongoId) {
+                    history.replace('/solve-quizzes', {}); // clear state to avoid re-triggering
+                    try {
+                        const quizResponse = await axios.get(`/api/quiz/${preselectedId}`, config);
+                        setQuizData(quizResponse.data);
+                        setSelectedQuiz(preselectedId);
+                        setPhase('solving');
+                        setSessionKey((k) => k + 1);
+                    } catch {
+                        // If quiz fetch fails just show the list
+                    }
+                }
             } catch (error) {
                 setMessage('Nu s-au putut încărca quiz-urile.');
                 setMessageType('error');
@@ -739,6 +756,7 @@ const SolveQuizzes = () => {
         };
 
         fetchQuizzes();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user, history]);
 
     const handleSelectQuiz = async (quizId) => {

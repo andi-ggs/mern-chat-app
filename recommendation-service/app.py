@@ -2,127 +2,152 @@ from flask import Flask, request, jsonify
 import pandas as pd
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
-from sklearn.metrics.pairwise import cosine_similarity
+from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
+
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 app = Flask(__name__)
 
-# --- DATE SINTETICE (Mock Data) ---
-# Simulăm o bază de date MongoDB (colecția QuizResult)
-# Pentru a demonstra prototipul fără a necesita o conexiune reală la o bază de date.
-mock_scores = [
-    {"userId": "user_algebra_weak", "quizId": "q_algebra_1", "score": 35},
-    {"userId": "user_algebra_weak", "quizId": "q_geom_1", "score": 78},
-    {"userId": "u2", "quizId": "q_algebra_1", "score": 40},
-    {"userId": "u2", "quizId": "q_algebra_2", "score": 82},
-    {"userId": "u3", "quizId": "q_algebra_1", "score": 90},
-    {"userId": "user_advanced", "quizId": "q_algebra_1", "score": 95},
-    {"userId": "user_advanced", "quizId": "q_geom_1", "score": 92},
-]
+MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/mern-chat')
 
-mock_quizzes = {
-    "q_algebra_1": {"title": "Ecuații simple", "chapter": "algebră", "difficulty": "ușor"},
-    "q_algebra_2": {"title": "Sisteme de ecuații", "chapter": "algebră", "difficulty": "mediu"},
-    "q_algebra_3": {"title": "Polinoame", "chapter": "algebră", "difficulty": "greu"},
-    "q_geom_1": {"title": "Arii și perimetre", "chapter": "geometrie", "difficulty": "ușor"},
-    "q_geom_2": {"title": "Teorema lui Pitagora", "chapter": "geometrie", "difficulty": "mediu"}
-}
 
-def get_score_matrix():
-    df = pd.DataFrame(mock_scores)
-    if df.empty:
+def get_db_data():
+    """Fetch real QuizResult and Quiz documents from MongoDB."""
+    try:
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
+        db = client.get_default_database()
+
+        results = list(db.quizresults.find({}, {'user': 1, 'quiz': 1, 'score': 1, '_id': 0}))
+        quizzes = list(db.quizzes.find({}, {'_id': 1, 'title': 1}))
+        client.close()
+
+        # Compute per-quiz average score to derive difficulty label
+        quiz_avg: dict = {}
+        for r in results:
+            qid = str(r['quiz'])
+            quiz_avg.setdefault(qid, []).append(r['score'])
+
+        def difficulty(qid: str) -> str:
+            scores = quiz_avg.get(qid, [])
+            if not scores:
+                return 'mediu'
+            avg = sum(scores) / len(scores)
+            return 'ușor' if avg >= 70 else 'mediu' if avg >= 40 else 'greu'
+
+        quiz_map = {
+            str(q['_id']): {'title': q.get('title', 'Quiz'), 'difficulty': difficulty(str(q['_id']))}
+            for q in quizzes
+        }
+        scores = [
+            {'userId': str(r['user']), 'quizId': str(r['quiz']), 'score': r['score']}
+            for r in results
+        ]
+        return scores, quiz_map
+
+    except Exception as exc:
+        print(f'[Flask] MongoDB error: {exc}')
+        return [], {}
+
+
+def build_score_matrix(scores: list) -> pd.DataFrame:
+    if not scores:
         return pd.DataFrame()
+    df = pd.DataFrame(scores)
     return df.pivot(index='userId', columns='quizId', values='score').fillna(0)
+
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "ok", "message": "Recommendation service is running"})
+    return jsonify({'status': 'ok', 'message': 'Recommendation service is running'})
+
 
 @app.route('/recommend', methods=['POST'])
 def recommend():
     data = request.get_json()
     if not data or 'userId' not in data:
-        return jsonify({"error": "userId is required"}), 400
+        return jsonify({'error': 'userId is required'}), 400
 
     user_id = data['userId']
-    score_matrix = get_score_matrix()
+    scores, quiz_map = get_db_data()
 
-    # 1. COLD START (Utilizator nou)
+    if not scores:
+        return jsonify({
+            'userId': user_id,
+            'strategy': 'db_unavailable',
+            'recommendations': []
+        })
+
+    score_matrix = build_score_matrix(scores)
+
+    # --- Cold start: user has no history in the score matrix ---
     if user_id not in score_matrix.index:
-        # Fallback la Content-Based Filtering (sau popularitate)
-        preferences = data.get('preferences', {})
-        preferred_chapter = preferences.get('chapters', ['algebră'])[0] if preferences.get('chapters') else 'algebră'
-        
-        cbf_recommendations = []
-        for q_id, q_data in mock_quizzes.items():
-            if q_data['chapter'] == preferred_chapter:
-                cbf_recommendations.append({
-                    "quizId": q_id,
-                    "title": q_data['title'],
-                    "score": 0.8, # Scor fictiv de relevanță
-                    "difficulty": q_data['difficulty']
-                })
-        
-        return jsonify({
-            "userId": user_id,
-            "strategy": "content_based_fallback",
-            "recommendations": cbf_recommendations[:5]
-        })
+        # Return the 5 most-solved quizzes as a popularity baseline
+        from collections import Counter
+        quiz_counts = Counter(r['quizId'] for r in scores)
+        top_quizzes = [qid for qid, _ in quiz_counts.most_common(5) if qid in quiz_map]
+        recs = [
+            {
+                'quizId': qid,
+                'title': quiz_map[qid]['title'],
+                'score': round(0.8 - i * 0.05, 2),
+                'difficulty': quiz_map[qid]['difficulty'],
+            }
+            for i, qid in enumerate(top_quizzes)
+        ]
+        return jsonify({'userId': user_id, 'strategy': 'cold_start_popularity', 'recommendations': recs})
 
-    # 2. SPARSITY CHECK (Prea puțini utilizatori pentru k-NN)
+    # --- Sparsity check: too few users for reliable k-NN ---
     if len(score_matrix) < 3:
-        # Fallback la popularitate
-        return jsonify({
-            "userId": user_id,
-            "strategy": "popularity_fallback",
-            "reason": "insufficient_common_scores",
-            "recommendations": [{"quizId": "q_algebra_1", "title": "Ecuații simple"}]
+        user_solved = set(score_matrix.columns[score_matrix.loc[user_id] > 0])
+        unsolved = [qid for qid in quiz_map if qid not in user_solved][:5]
+        recs = [
+            {
+                'quizId': qid,
+                'title': quiz_map[qid]['title'],
+                'score': 0.70,
+                'difficulty': quiz_map[qid]['difficulty'],
+            }
+            for qid in unsolved
+        ]
+        return jsonify({'userId': user_id, 'strategy': 'popularity_fallback', 'recommendations': recs})
+
+    # --- Collaborative k-NN filtering ---
+    k = min(5, len(score_matrix) - 1)
+    knn = NearestNeighbors(n_neighbors=k, metric='cosine')
+    knn.fit(score_matrix.values)
+
+    user_idx = score_matrix.index.get_loc(user_id)
+    _, indices = knn.kneighbors(score_matrix.iloc[user_idx].values.reshape(1, -1))
+    neighbor_indices = indices[0][1:]  # exclude self (distance 0)
+
+    user_solved = set(score_matrix.columns[score_matrix.iloc[user_idx] > 0])
+
+    neighbor_scores: dict = {}
+    for n_idx in neighbor_indices:
+        for quiz_id, score in score_matrix.iloc[n_idx].items():
+            if score > 0 and quiz_id not in user_solved:
+                neighbor_scores.setdefault(quiz_id, []).append(score)
+
+    final_recs = []
+    for qid, sc_list in neighbor_scores.items():
+        q = quiz_map.get(qid, {'title': 'Quiz', 'difficulty': 'mediu'})
+        final_recs.append({
+            'quizId': qid,
+            'title': q['title'],
+            'score': round(float(np.mean(sc_list)) / 100.0, 2),
+            'difficulty': q['difficulty'],
         })
 
-    # 3. K-NN COLLABORATIVE FILTERING
-    # Găsim vecinii (k=2 pentru acest set de date mic)
-    knn = NearestNeighbors(n_neighbors=2, metric='cosine')
-    knn.fit(score_matrix)
-    
-    user_idx = score_matrix.index.get_loc(user_id)
-    distances, indices = knn.kneighbors(score_matrix.iloc[user_idx, :].values.reshape(1, -1))
-    
-    # Excludem utilizatorul curent din vecini (care e pe prima poziție, distanța 0)
-    neighbor_indices = indices[0][1:]
-    
-    # Calculăm scorurile recomandărilor pe baza vecinilor
-    recommendations = {}
-    user_solved_quizzes = set(score_matrix.columns[score_matrix.iloc[user_idx] > 0])
-    
-    for neighbor_idx in neighbor_indices:
-        neighbor_id = score_matrix.index[neighbor_idx]
-        neighbor_scores = score_matrix.iloc[neighbor_idx]
-        
-        for quiz_id, score in neighbor_scores.items():
-            if score > 0 and quiz_id not in user_solved_quizzes:
-                if quiz_id not in recommendations:
-                    recommendations[quiz_id] = []
-                recommendations[quiz_id].append(score)
-                
-    # Mediem scorurile și formatăm răspunsul
-    final_recs = []
-    for quiz_id, scores in recommendations.items():
-        avg_score = np.mean(scores)
-        quiz_data = mock_quizzes.get(quiz_id, {"title": "Unknown", "difficulty": "Unknown"})
-        final_recs.append({
-            "quizId": quiz_id,
-            "score": round(avg_score / 100.0, 2), # Normalizăm 0-1
-            "title": quiz_data['title'],
-            "difficulty": quiz_data['difficulty']
-        })
-        
     final_recs.sort(key=lambda x: x['score'], reverse=True)
 
     return jsonify({
-        "userId": user_id,
-        "strategy": "collaborative_knn",
-        "recommendations": final_recs[:5],
-        "latencyMs": 142 # Valoare simulată pentru demonstrație
+        'userId': user_id,
+        'strategy': 'collaborative_knn',
+        'recommendations': final_recs[:5],
     })
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

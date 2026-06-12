@@ -19,10 +19,12 @@ import { useHistory } from 'react-router-dom';
 import { Skeleton, SkeletonText } from '../ui/skeleton';
 import { Alert } from '../ui/alert';
 
+// Fallback shown only when the API is completely unreachable.
+// quizId is null so clicking "Rezolvă" navigates to the quiz list without auto-starting.
 const POPULAR_FALLBACK = [
-  { quizId: 'q_algebra_1', title: 'Ecuații simple', difficulty: 'ușor', score: 0.9 },
-  { quizId: 'q_geom_1', title: 'Arii și perimetre', difficulty: 'ușor', score: 0.85 },
-  { quizId: 'q_algebra_2', title: 'Sisteme de ecuații', difficulty: 'mediu', score: 0.8 },
+  { quizId: null, title: 'Ecuații simple', difficulty: 'ușor', score: 0.9 },
+  { quizId: null, title: 'Arii și perimetre', difficulty: 'ușor', score: 0.85 },
+  { quizId: null, title: 'Sisteme de ecuații', difficulty: 'mediu', score: 0.8 },
 ];
 
 const DIFFICULTY_STYLES = {
@@ -185,6 +187,7 @@ const RecommendedForYou = ({ user }) => {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFallback, setIsFallback] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
   const [warning, setWarning] = useState(null);
 
   useEffect(() => {
@@ -193,6 +196,7 @@ const RecommendedForYou = ({ user }) => {
     const fetchRecommendations = async () => {
       setLoading(true);
       setIsFallback(false);
+      setIsNewUser(false);
       setWarning(null);
 
       const config = {
@@ -205,7 +209,9 @@ const RecommendedForYou = ({ user }) => {
 
         if (recs.length > 0) {
           setRecommendations(recs);
-          if (data.source === 'fallback_popularity' || data.warning) {
+          if (data.isNewUser) {
+            setIsNewUser(true);
+          } else if (data.source === 'fallback_popularity' || data.warning) {
             setIsFallback(true);
             setWarning(data.warning || 'Afișăm quiz-uri populare în lipsa serviciului de recomandări.');
           }
@@ -228,9 +234,11 @@ const RecommendedForYou = ({ user }) => {
   }, [user?._id, user?.token]);
 
   const handleSolve = (quizId) => {
+    // Only pass the quizId when it's a real MongoDB ObjectId (24-char hex)
+    const isValidId = quizId && /^[a-f\d]{24}$/i.test(quizId);
     history.push({
       pathname: '/solve-quizzes',
-      state: { quizId },
+      state: isValidId ? { quizId } : {},
     });
   };
 
@@ -258,10 +266,20 @@ const RecommendedForYou = ({ user }) => {
               Recomandat pentru tine
             </Heading>
             <Text fontSize="sm" color="gray.500">
-              Quiz-uri personalizate pe baza progresului tău
+              {isNewUser
+                ? 'Cele mai populare quiz-uri — rezolvă câteva pentru recomandări personalizate'
+                : 'Quiz-uri personalizate pe baza progresului tău'}
             </Text>
           </VStack>
         </HStack>
+
+        {isNewUser && !loading && (
+          <Alert
+            status="info"
+            borderRadius="xl"
+            title="Bun venit! Recomandările de mai jos sunt bazate pe popularitate. Pe măsură ce rezolvi quiz-uri, vei primi sugestii personalizate."
+          />
+        )}
 
         {isFallback && warning && !loading && (
           <Alert

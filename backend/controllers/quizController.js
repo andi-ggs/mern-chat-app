@@ -94,6 +94,7 @@ const deleteQuiz = asyncHandler(async (req, res) => {
 const submitQuiz = asyncHandler(async (req, res) => {
     const { quizId, answers, score, durationSeconds } = req.body;
     const QuizResult = require("../models/quizResultModel");
+    const Recommendation = require("../models/recommendationModel");
 
     if (!quizId || score === undefined) {
         return res.status(400).json({ message: "Quiz ID și scorul sunt necesare!" });
@@ -107,6 +108,9 @@ const submitQuiz = asyncHandler(async (req, res) => {
             answers,
             durationSeconds
         });
+
+        // Invalidate cached recommendations so the next visit re-runs the algorithm
+        await Recommendation.deleteOne({ user: req.user._id });
 
         res.status(201).json(result);
     } catch (error) {
